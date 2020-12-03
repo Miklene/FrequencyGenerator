@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Генератор Частоты</string>
+    <string name="single_frequency">Одиночная частота</string>
+    <string name="hertz">Hz</string>
+</resources>

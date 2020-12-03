@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">FrequencyGenerator</string>
+    <string name="app_name">Frequency Generator</string>
+    <string name="single_frequency">Single frequency</string>
+    <string name="hertz">Hz</string>
 </resources>
