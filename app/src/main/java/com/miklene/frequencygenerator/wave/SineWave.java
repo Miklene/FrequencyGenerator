@@ -1,44 +1,32 @@
 package com.miklene.frequencygenerator.wave;
 
-import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-
 public class SineWave extends Wave {
 
-    public SineWave(float frequency, double amplitude, int harmonicsNumber) {
-        super(frequency, amplitude, harmonicsNumber);
+    public SineWave(float frequency, double amplitude) {
+        super(frequency, amplitude);
+        phase = 0;
     }
 
     @Override
-    void createMainTone(float frequency, double amplitude) {
-        mainTone = new Harmonic(frequency, amplitude);
-    }
-
-    @Override
-    void createWaveHarmonics(float frequency, double amplitude, int harmonicsNumber) {
-        for (int i = 0; i < harmonicsNumber; i++)
-            waveHarmonics.add(new Harmonic(frequency * (i + 2), amplitude));
-    }
-
-    @Override
-    public float[] getBuffer() {
-        float[] buffer = mainTone.getBuffer();
-        float[] harmonicsBuffer;
-        for (Harmonic harmonic : waveHarmonics) {
-            harmonicsBuffer = harmonic.getBuffer();
-            addBuffers(buffer, harmonicsBuffer);
-        }
-        int stereoBufferLength = buffer.length * 2;
-        float[] stereoBuffer = new float[stereoBufferLength];
-        float correctionValue = findMaxAmplitude(buffer) * 1.2f;
+    public float[] createBuffer() {
+        float[] buffer = new float[duration];
         for (int i = 0; i < buffer.length; i++) {
-            stereoBuffer[2 * i] = buffer[i] / correctionValue;
-            stereoBuffer[2 * i + 1] = buffer[i] / correctionValue;
+            buffer[i] = (float) (Math.sin(twoPI *
+                    (frequency * i * hertzAtPoint + phase)) * amplitude);
+        }
+        countPhase();
+        int stereoBufferLength = buffer.length*2;
+        float[] stereoBuffer = new float[stereoBufferLength];
+        for(int i = 0; i < buffer.length; i++){
+            stereoBuffer[2*i] = buffer[i];
+            stereoBuffer[2*i+1] = buffer[i];
+        }
+        float correctionValue = findMaxAmplitude(stereoBuffer)*1.2f;
+        for (int i = 0; i < stereoBuffer.length; i++) {
+            stereoBuffer[i] = stereoBuffer[i] / correctionValue;
         }
         return stereoBuffer;
+     //   return buffer;
     }
 
     private float findMaxAmplitude(float[] buffer) {
@@ -49,10 +37,5 @@ public class SineWave extends Wave {
                 max = Math.abs(buffer[i]);
         }
         return max;
-    }
-
-    private void addBuffers(float[] buffer, float[] harmonicsBuffer) {
-        for (int i = 0; i < buffer.length; i++)
-            buffer[i] += harmonicsBuffer[i];
     }
 }

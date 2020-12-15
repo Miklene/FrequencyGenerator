@@ -135,18 +135,18 @@ public class WavePlayer implements RecordParameters {
                     prepareAudioTrack(Settings.duration*2);
                 else prepareAudioTrack(Settings.duration);*/
                 prepareAudioTrack(duration * 2);
-                write(startPlayback.createBuffer(wave.getBuffer()));
+                write(startPlayback.createBuffer(wave.createBuffer()));
                 play();
                 state = PlayerState.ON;
             }
             while (state == PlayerState.ON) {
-                write(wave.getBuffer());
+                write(wave.createBuffer());
             }
             if (state == PlayerState.END) {
                 EndPlayback endPlayback = new EndPlayback();
-                write(endPlayback.createBuffer(wave.getBuffer()));
+                write(endPlayback.createBuffer(wave.createBuffer()));
                 NullPlayback nullPlayback = new NullPlayback();
-                write(nullPlayback.createBuffer(wave.getBuffer()));
+                write(nullPlayback.createBuffer(wave.createBuffer()));
                 audioTrack.stop();
                 try {
                     Thread.sleep(100);

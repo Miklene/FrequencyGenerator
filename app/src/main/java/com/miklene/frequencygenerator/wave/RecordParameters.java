@@ -6,4 +6,5 @@ public interface RecordParameters {
     float twoPI = (float) (2 *Math.PI);
     int duration = 1000;
     double durationPerSampleRate = (double)duration / sampleRate;
+
 }

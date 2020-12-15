@@ -1,22 +1,29 @@
 package com.miklene.frequencygenerator.wave;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
-public abstract class Wave {
+public abstract class Wave implements RecordParameters {
+
     WaveType type;
-    Harmonic mainTone;
-    ArrayList<Harmonic> waveHarmonics = new ArrayList<>();
-    int imageId;
+    float frequency;
+    double amplitude;
+    double phase;
 
 
-    public Wave(float frequency, double amplitude, int harmonicsNumber) {
-        createMainTone(frequency, amplitude);
-        createWaveHarmonics(frequency, amplitude, harmonicsNumber);
+    public Wave(float frequency, double amplitude) {
+        this.frequency = frequency;
+        this.amplitude = amplitude;
     }
 
-    abstract void createMainTone(float frequency, double amplitude);
+    public abstract float[] createBuffer();
 
-    abstract void createWaveHarmonics(float frequency, double amplitude, int harmonicsNumber);
+    void countPhase() {
+        double period = 1d / frequency;
+        phase = phase + durationPerSampleRate / period;
+        phase -= (int) phase;
+        Log.d("TAG", String.valueOf(durationPerSampleRate));
+    }
 
-    public abstract float[] getBuffer();
 }

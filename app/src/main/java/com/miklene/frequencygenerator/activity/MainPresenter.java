@@ -17,7 +17,7 @@ public class MainPresenter extends MvpPresenter<PlaybackView> {
     }
 
     public void onImageButtonPlayClicked(){
-        Wave wave = new SineWave(200,100,0);
+        Wave wave = new SineWave(200,100);
         PlayerState state = wavePlayer.getState();
         if(state.equals(PlayerState.OFF)) {
             getViewState().setImageButtonPlayBackground(R.drawable.ic_baseline_stop_circle_24);
