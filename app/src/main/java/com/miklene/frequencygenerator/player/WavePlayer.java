@@ -147,15 +147,12 @@ public class WavePlayer implements RecordParameters {
                 write(endPlayback.createBuffer(wave.getBuffer()));
                 NullPlayback nullPlayback = new NullPlayback();
                 write(nullPlayback.createBuffer(wave.getBuffer()));
-                int st = audioTrack.getPlayState();
                 audioTrack.stop();
-                int st1 = audioTrack.getPlayState();
                 try {
                     Thread.sleep(100);
                 } catch (Exception e) {
                     Log.i("Exception", e.toString());
                 }
-                int st2 = audioTrack.getPlayState();
                 audioTrack.release();
                 state = PlayerState.OFF;
                 wave = null;

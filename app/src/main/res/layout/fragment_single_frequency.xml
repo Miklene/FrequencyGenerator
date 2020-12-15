@@ -1,51 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/grey">
 
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextNumberDecimal" />
-
-    <ImageButton
-        android:id="@+id/imageButtonPlaySingleFrequency"
+    <Spinner
+        android:id="@+id/spinnerWaveType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/ic_baseline_play_circle_filled_24"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/grey"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextFrequency"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <EditText
-        android:id="@+id/editTextNumberDecimal"
+        android:id="@+id/editTextFrequency"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/frequency"
         android:ems="10"
+        android:gravity="center"
         android:inputType="numberDecimal"
         android:textSize="36sp"
-        android:gravity="center"
+        android:theme="@style/EditTextStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textViewHz"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/hertz"
+        android:textColor="@color/black"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextNumberDecimal" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextFrequency" />
 
+    <SeekBar
+        android:id="@+id/seekBarFrequency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/SeekBarStyle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextFrequency" />
+
+    <ImageButton
+        android:id="@+id/imageButtonPlay"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:src="@drawable/ic_baseline_play_circle_filled_24"
+        android:background="@color/grey"
+        android:contentDescription="@string/button_play_stop"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarFrequency" />
+
+    <ImageButton
+        android:id="@+id/imageButtonIncreaseFrequency"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:padding="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/ic_outline_add_circle_24"
+        app:layout_constraintBottom_toBottomOf="@+id/imageButtonPlay"
+        app:layout_constraintStart_toEndOf="@+id/imageButtonPlay"
+        app:layout_constraintTop_toTopOf="@+id/imageButtonPlay" />
+
+    <ImageButton
+        android:id="@+id/imageButtonDecreaseFrequency"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:padding="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/ic_baseline_remove_circle_24"
+        app:layout_constraintBottom_toBottomOf="@+id/imageButtonPlay"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonPlay"
+        app:layout_constraintTop_toTopOf="@+id/imageButtonPlay" />
 </androidx.constraintlayout.widget.ConstraintLayout>

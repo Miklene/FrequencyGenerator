@@ -3,4 +3,11 @@
     <string name="app_name">Генератор Частоты</string>
     <string name="single_frequency">Одиночная частота</string>
     <string name="hertz">Hz</string>
+    <string-array name="wave_type">
+        <item>Синус</item>
+        <item>Пилообразная</item>
+        <item>Треугольная</item>
+        <item>Меандр</item>
+    </string-array>
+    <string name="frequency">Частота</string>
 </resources>

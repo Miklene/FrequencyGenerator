@@ -2,4 +2,12 @@
     <string name="app_name">Frequency Generator</string>
     <string name="single_frequency">Single frequency</string>
     <string name="hertz">Hz</string>
+    <string-array name="wave_type">
+        <item>Sine</item>
+        <item>Sawtooth</item>
+        <item>Triangle</item>
+        <item>Square</item>
+    </string-array>
+    <string name="button_play_stop">Play/stop</string>
+    <string name="frequency">Frequency</string>
 </resources>

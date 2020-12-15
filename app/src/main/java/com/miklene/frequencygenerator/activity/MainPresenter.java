@@ -12,6 +12,7 @@ import com.miklene.frequencygenerator.wave.Wave;
 public class MainPresenter extends MvpPresenter<PlaybackView> {
 
     private WavePlayer wavePlayer = WavePlayer.getInstance();
+
     public MainPresenter() {
     }
 
@@ -28,6 +29,24 @@ public class MainPresenter extends MvpPresenter<PlaybackView> {
             wavePlayer.stop();
             getViewState().setImageButtonPlayBackground(R.drawable.ic_baseline_play_circle_filled_24);
         }
+    }
+
+    public void onImageButtonIncreaseClicked(){
+       /* int userValue = getViewState().getUserSeekBarValue();
+        if(userValue+1<22000) {
+            getViewState().setEditTextValue(userValue + 1);
+            return;
+        }*/
+        getViewState().setEditTextValue(22000);
+    }
+
+    public void onImageButtonDecreaseClicked(){
+      /*  int userValue = getViewState().getUserSeekBarValue();
+        if(userValue-1>0) {
+            getViewState().setEditTextValue(userValue - 1);
+            return;
+        }*/
+        getViewState().setEditTextValue(1);
     }
 
 

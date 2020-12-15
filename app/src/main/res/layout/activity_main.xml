@@ -5,19 +5,20 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    tools:context=".activity.MainActivity">
+    tools:context=".activity.MainActivity"
+    android:background="@color/grey">
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayoutMain"
+        android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabMode="fixed" />
+        app:tabMode="fixed"
+        android:background="@color/grey"/>
 
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPagerMain"
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0px"
         android:layout_weight="1"
         android:background="@android:color/white" />
-
 </LinearLayout>
