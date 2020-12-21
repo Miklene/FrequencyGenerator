@@ -5,7 +5,11 @@ import com.arellomobile.mvp.MvpView;
 public interface PlaybackView extends MvpView {
 
     void setImageButtonPlayBackground(int drawableId);
-    void setEditTextValue(int value);
+    void setEditTextValue(String value);
+    void setSeekBarProgress(int progress);
+    void vibrate();
+    void subscribeEditTextObservable();
+    void disposeEditTextObservable();
     //int getUserSeekBarValue();
     //void setUserSeekBarValue(int userSeekBarValue);
 

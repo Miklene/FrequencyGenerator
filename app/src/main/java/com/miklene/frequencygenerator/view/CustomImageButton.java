@@ -13,9 +13,6 @@ import androidx.appcompat.widget.AppCompatImageButton;
 
 public class CustomImageButton extends AppCompatImageButton {
 
-    private static final long REPEAT_INTERVAL = 150L; // интервал повтора в миллисекундах
-    private long lastAction = 0L;
-
     public CustomImageButton(@NonNull Context context) {
         super(context);
     }
@@ -31,14 +28,8 @@ public class CustomImageButton extends AppCompatImageButton {
         long currTime = SystemClock.uptimeMillis();
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                lastAction = currTime;
-                // код короткого нажатия
                 break;
-            case MotionEvent.ACTION_MOVE:
-                if (currTime - lastAction >= REPEAT_INTERVAL) {
-                    lastAction = currTime;
-                    // код действия при удержании
-                }
+            case MotionEvent.ACTION_UP:
                 break;
         }
         return true;
@@ -49,7 +40,6 @@ public class CustomImageButton extends AppCompatImageButton {
     @Override
     public boolean performClick() {
         super.performClick();
-        doSomething();
         return true;
     }
 

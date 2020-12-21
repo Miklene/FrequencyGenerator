@@ -17,6 +17,9 @@
     <style name="SeekBarStyle" parent="Widget.AppCompat.SeekBar">
         <item name="colorAccent">@color/blue</item>
     </style>
+    <style name="SeekBarWhiteStyle" parent="Widget.AppCompat.SeekBar">
+        <item name="colorAccent">@color/white</item>
+    </style>
     <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
         <item name="colorAccent">@color/blue</item>
     </style>
