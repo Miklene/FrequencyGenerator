@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey"
-    android:id="@+id/layout">
+    android:background="@color/grey">
 
     <Spinner
         android:id="@+id/spinnerWaveType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/grey"
         android:layout_margin="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextFrequency"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="@color/grey"
+        app:layout_constraintBottom_toTopOf="@+id/textViewVolume"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.miklene.frequencygenerator.view.VerticalSeekBar
         android:id="@+id/seekBarVolume"
         android:layout_width="24dp"
         android:layout_height="150dp"
         android:layout_margin="5dp"
-        android:visibility="gone"
-        android:theme="@style/SeekBarWhiteStyle"
         android:background="@drawable/blue_rectangle"
+        android:theme="@style/SeekBarWhiteStyle"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/imageButtonVolume"
         app:layout_constraintEnd_toEndOf="@+id/imageButtonVolume"
         app:layout_constraintStart_toStartOf="@+id/imageButtonVolume" />
@@ -44,8 +42,8 @@
         android:id="@+id/textViewVolume"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/grey"
         android:layout_margin="5dp"
+        android:background="@color/grey"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/editTextFrequency"
         app:layout_constraintEnd_toEndOf="@+id/imageButtonVolume"
@@ -55,6 +53,8 @@
         android:id="@+id/editTextFrequency"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:contentDescription="@string/frequency"
         android:ems="10"
         android:gravity="center"
@@ -81,6 +81,8 @@
         android:id="@+id/seekBarFrequency"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:theme="@style/SeekBarStyle"
         app:layout_constraintBottom_toTopOf="@+id/imageButtonPlay"
         app:layout_constraintEnd_toEndOf="parent"
@@ -90,6 +92,8 @@
         android:id="@+id/imageButtonPlay"
         android:layout_width="72dp"
         android:layout_height="72dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:background="@color/grey"
         android:contentDescription="@string/button_play_stop"
         android:src="@drawable/ic_baseline_play_circle_filled_24"
@@ -100,14 +104,14 @@
 
     <com.miklene.frequencygenerator.view.CustomImageButton
         android:id="@+id/imageButtonIncreaseFrequency"
-        android:clickable="true"
-        android:focusable="true"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:padding="5dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:background="@drawable/ic_outline_add_circle_24"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageButtonPlay"
         app:layout_constraintStart_toEndOf="@+id/imageButtonPlay"
         app:layout_constraintTop_toTopOf="@+id/imageButtonPlay" />
@@ -116,10 +120,10 @@
         android:id="@+id/imageButtonDecreaseFrequency"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:padding="5dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:background="@drawable/ic_baseline_remove_circle_24"
+        android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageButtonPlay"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonPlay"
         app:layout_constraintTop_toTopOf="@+id/imageButtonPlay" />

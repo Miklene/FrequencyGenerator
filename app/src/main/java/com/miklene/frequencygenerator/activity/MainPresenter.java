@@ -22,6 +22,7 @@ public class MainPresenter extends MvpPresenter<PlaybackView> {
 
     private WavePlayer wavePlayer = WavePlayer.getInstance();
     private float frequency = 200;
+    private int volume = 100;
     private float lastFrequency;
     private long repeats = 0;
     private int step = 1;
@@ -31,7 +32,7 @@ public class MainPresenter extends MvpPresenter<PlaybackView> {
     }
 
     public void onEditTextTextChanges(String text) {
-        text =text.replace(',', '.');
+        text = text.replace(',', '.');
         try {
             frequency = Float.parseFloat(text);
             if (!text.equals(formatStringValue(frequency)))
@@ -70,6 +71,33 @@ public class MainPresenter extends MvpPresenter<PlaybackView> {
             wavePlayer.stop();
             getViewState().setImageButtonPlayBackground(R.drawable.ic_baseline_play_circle_filled_24);
         }
+    }
+
+    public void seekBarVolumeProgressChanged(int progress) {
+        volume = progress;
+        getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
+        getViewState().setTextViewVolumeValue(getStringValueOfVolume(volume));
+    }
+
+    private int getVolumeSrc(int volumeValue) {
+        int resId = R.drawable.blue_rectangle;
+        if (volumeValue == 0)
+            resId = R.drawable.ic_baseline_volume_off_24;
+        if (volumeValue <= 50 && volumeValue > 0)
+            resId = R.drawable.ic_baseline_volume_down_24;
+        if (volumeValue > 50)
+            resId = R.drawable.ic_baseline_volume_up_24;
+        return resId;
+    }
+
+    private String getStringValueOfVolume(int volumeValue){
+        return volumeValue + "%";
+    }
+
+    public void initVolumeElements() {
+        getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
+        getViewState().setTextViewVolumeValue(getStringValueOfVolume(volume));
+        getViewState().setSeekBarVolumeProgress(volume);
     }
 
     public void seekBarProgressChanged(int progress) {

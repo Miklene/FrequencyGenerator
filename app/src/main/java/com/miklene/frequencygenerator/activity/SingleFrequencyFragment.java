@@ -56,8 +56,7 @@ import static android.os.VibrationEffect.EFFECT_CLICK;
 import static android.widget.Toast.makeText;
 
 
-public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView,
-        SeekBar.OnSeekBarChangeListener {
+public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView {
     public static final String ARG_PAGE = "ARG_PAGE";
 
     @InjectPresenter
@@ -78,6 +77,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     private DisposableObserver<Long> disposable;
     private DisposableObserver<String> editTextDisposable;
     private DisposableObserver<Long> seekBarDisposable;
+    private Disposable seekBarVolumeDisposable;
     private Observable<Long> observable;
     private int repeats = 0;
     private int cursorPosition;
@@ -97,7 +97,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         initDecreaseButton();
         initEditTextFrequency();
         initVolumeButton();
-
+        initSeekBarVolume();
         binding.imageButtonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,19 +108,20 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         return view;
     }
 
-
-
-    public void
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
     }
 
+    @Override
+    public void setEditTextValue(String value) {
+        binding.editTextFrequency.setText(value);
+        setEditTextSelection();
+    }
+
     private void initEditTextFrequency() {
         binding.editTextFrequency.setText(String.valueOf(200));
-        //editTextDisposable = editTextObservable();
         binding.editTextFrequency.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,8 +134,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_ENTER) {
                     subscribeEditTextObservable();
-                    /*if (editTextDisposable != null)
-                        editTextDisposable.dispose();*/
                     hideKeyboard();
                 }
                 return false;
@@ -142,11 +141,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         });
     }
 
-    @Override
-    public void setEditTextValue(String value) {
-        binding.editTextFrequency.setText(value);
-        setEditTextSelection();
-    }
 
     @Override
     public void subscribeEditTextObservable() {
@@ -186,19 +180,14 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         }
     }
 
-    private Observable<String> editTextObservable() {
+    @Override
+    public void setTextViewVolumeValue(String volumeValue) {
+        binding.textViewVolume.setText(volumeValue);
+    }
 
-        return RxTextView.textChanges(binding.editTextFrequency)
-                .debounce(250, TimeUnit.MILLISECONDS)
-                .map(CharSequence::toString)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnDispose(() -> {
-                    Toast toast = makeText(getActivity(), "Disposed", Toast.LENGTH_LONG);
-                    toast.show();
-                });
-                /*.subscribe(s -> {
-                    mainPresenter.onEditTextTextChanges(s);
-                });*/
+    @Override
+    public void setImageButtonVolumeSrc(int drawableId) {
+        binding.imageButtonVolume.setImageResource(drawableId);
     }
 
     private void setEditTextSelection() {
@@ -216,15 +205,66 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
                 InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
-
     private void initSeekBar() {
         binding.seekBarFrequency.setMax(maxSeekBarValue);
-        binding.seekBarFrequency.setOnSeekBarChangeListener(this);
+        binding.seekBarFrequency.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                observable = Observable.interval(25, TimeUnit.MILLISECONDS);
+                seekBarDisposable = new DisposableObserver<Long>() {
+                    @Override
+                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull Long l) {
+                        mainPresenter.seekBarProgressChanged(binding.seekBarFrequency.getProgress());
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                };
+                observable.observeOn(AndroidSchedulers.mainThread())
+                        .distinct()
+                        .subscribe(seekBarDisposable);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Toast toast = Toast.makeText(getActivity(), "Dispose", Toast.LENGTH_SHORT);
+                toast.show();
+                if (seekBarDisposable != null)
+                    seekBarDisposable.dispose();
+            }
+        });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             binding.seekBarFrequency.setMin(minSeekBarValue);
         }
         binding.seekBarFrequency.setProgress(calculateSeekBarProgress(200));
         binding.editTextFrequency.setText(String.valueOf(200));
+    }
+
+    public void initSeekBarVolume() {
+        binding.seekBarVolume.setMax(100);
+        mainPresenter.initVolumeElements();
+    }
+
+    private Observable<Integer> seekBarVolumeObserve(){
+        return  RxSeekBar.changes(binding.seekBarVolume)
+                .debounce(10,TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public void setSeekBarVolumeProgress(int progress) {
+        binding.seekBarVolume.setProgress(progress);
     }
 
     public void setSeekBarProgress(int progress) {
@@ -273,17 +313,21 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         binding.imageButtonPlay.setImageResource(drawableId);
     }
 
-    private void initVolumeButton(){
+    private void initVolumeButton() {
         binding.imageButtonVolume.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(binding.seekBarVolume.getVisibility()==View.GONE) {
+                v.startAnimation(new AlphaAnimation(1F, 0.8F));
+                if (binding.seekBarVolume.getVisibility() == View.GONE) {
                     TransitionManager.beginDelayedTransition(binding.layout, new AutoTransition());
                     binding.seekBarVolume.setVisibility(View.VISIBLE);
-                }
-                else {
+                    Observable<Integer> observable =  seekBarVolumeObserve();
+                    seekBarVolumeDisposable = observable
+                            .subscribe(integer -> mainPresenter.seekBarVolumeProgressChanged(integer));
+                } else {
                     TransitionManager.beginDelayedTransition(binding.layout, new AutoTransition());
                     binding.seekBarVolume.setVisibility(View.GONE);
+                    seekBarVolumeDisposable.dispose();
                 }
             }
         });
@@ -319,84 +363,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         });
     }
 
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        //Single<Integer> single =
-        
-       /* observable = Observable.create(o -> {
-            o.onNext(progress);
-        });
-        seekBarDisposable = new DisposableObserver<Integer>() {
-            @Override
-            public void onNext(@io.reactivex.rxjava3.annotations.NonNull Integer integer) {
-                mainPresenter.seekBarProgressChanged(integer);
-            }
-
-            @Override
-            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        };
-        observable.debounce(50, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(seekBarDisposable);*/
-    }
-
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-        observable = Observable.interval(25 ,TimeUnit.MILLISECONDS);
-        seekBarDisposable = new DisposableObserver<Long>() {
-            @Override
-            public void onNext(@io.reactivex.rxjava3.annotations.NonNull Long l) {
-                mainPresenter.seekBarProgressChanged(binding.seekBarFrequency.getProgress());
-            }
-
-            @Override
-            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        };
-        observable.observeOn(AndroidSchedulers.mainThread())
-                .distinct()
-                .subscribe(seekBarDisposable);
-       /* Observable<Integer> observable = seekBarObservable();
-        seekBarDisposable = new DisposableObserver<Integer>() {
-            @Override
-            public void onNext(@io.reactivex.rxjava3.annotations.NonNull Integer integer) {
-                mainPresenter.seekBarProgressChanged(integer);
-
-            }
-
-            @Override
-            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        };*/
-        //  observable.subscribe(seekBarDisposable);
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-        Toast toast = Toast.makeText(getActivity(), "Dispose", Toast.LENGTH_SHORT);
-        toast.show();
-        if (seekBarDisposable != null)
-            seekBarDisposable.dispose();
-    }
 
     public class CustomImageButton extends AppCompatImageButton {
 
