@@ -2,15 +2,21 @@ package com.miklene.frequencygenerator.wave;
 
 import android.util.Log;
 
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
 import java.util.ArrayList;
+
 
 public abstract class Wave implements RecordParameters {
 
+    long id = 0;
     WaveType type;
     float frequency;
     double amplitude;
     double phase;
-
 
     public Wave(float frequency, double amplitude) {
         this.frequency = frequency;
@@ -26,4 +32,19 @@ public abstract class Wave implements RecordParameters {
         Log.d("TAG", String.valueOf(durationPerSampleRate));
     }
 
+    public WaveType getType() {
+        return type;
+    }
+
+    public void setType(WaveType type) {
+        this.type = type;
+    }
+
+    public double getPhase() {
+        return phase;
+    }
+
+    public void setPhase(double phase) {
+        this.phase = phase;
+    }
 }

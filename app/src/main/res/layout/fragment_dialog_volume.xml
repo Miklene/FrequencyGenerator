@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:theme="@style/Theme.FrequencyGenerator"
+    android:padding="10dp">
+
+
+    <TextView
+        android:id="@+id/textViewVolume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:text="@string/volume"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/seekBarVolume"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <SeekBar
+        android:id="@+id/seekBarVolume"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:theme="@style/SeekBarStyle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewVolume" />
+
+    <TextView
+        android:id="@+id/textViewBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:text="@string/balance"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarVolume" />
+
+    <SeekBar
+        android:id="@+id/seekBarBalance"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:theme="@style/SeekBarBalanceStyle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewBalance" />
+
+    <TextView
+        android:id="@+id/textViewLeftChannel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/left_channel"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toLeftOf="@id/seekBarBalance"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarBalance" />
+    <TextView
+        android:id="@+id/textViewLeftChannelValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toRightOf="@id/textViewLeftChannel"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarBalance" />
+
+    <TextView
+        android:id="@+id/textViewRightChannel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/right_channel"
+        android:textSize="12sp"
+        app:layout_constraintRight_toLeftOf="@id/textViewRightChannelValue"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarBalance" />
+
+    <TextView
+        android:id="@+id/textViewRightChannelValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        app:layout_constraintRight_toRightOf="@id/seekBarBalance"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarBalance" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

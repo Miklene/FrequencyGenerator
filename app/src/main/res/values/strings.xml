@@ -10,4 +10,9 @@
     </string-array>
     <string name="button_play_stop">Play/stop</string>
     <string name="frequency">Frequency</string>
+    <!--DialogFragmentVolume-->
+    <string name="volume">Volume</string>
+    <string name="balance">Sound balance</string>
+    <string name="left_channel">Left channel</string>
+    <string name="right_channel">Right channel</string>
 </resources>

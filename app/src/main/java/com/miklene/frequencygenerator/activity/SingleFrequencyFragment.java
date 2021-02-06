@@ -1,18 +1,14 @@
 package com.miklene.frequencygenerator.activity;
 
 import android.content.Context;
-import android.media.AudioAttributes;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.Editable;
 import android.text.Selection;
-import android.transition.AutoTransition;
-import android.transition.TransitionManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -21,17 +17,16 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.fragment.app.DialogFragment;
 
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
@@ -42,29 +37,28 @@ import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.databinding.FragmentSingleFrequencyBinding;
 import com.miklene.frequencygenerator.databinding.SpinnerRowBinding;
 
-import java.sql.Time;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.observers.DisposableObserver;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
-import static android.os.VibrationEffect.EFFECT_CLICK;
 import static android.widget.Toast.makeText;
 
 
-public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView {
+public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView, VolumeDialogFragment.VolumeListener {
     public static final String ARG_PAGE = "ARG_PAGE";
 
     @InjectPresenter
     MainPresenter mainPresenter;
 
+
+
     private FragmentSingleFrequencyBinding binding;
     private SpinnerRowBinding spinnerRowBinding;
-    String[] array;
+    String[] spinnerItems;
     int[] images = new int[]{
             R.drawable.ic_sine,
             R.drawable.ic_sawtooth,
@@ -82,16 +76,21 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     private int repeats = 0;
     private int cursorPosition;
 
+    private static final String PREFS_FILE = "Wave";
+    private static final String PREFS_FREQUENCY = "Frequency";
+    private static final String PREFS_WAVE_TYPE = "WaveType";
+    private static final String PREFS_VOLUME = "Volume";
+    private SharedPreferences settings;
+    private SharedPreferences.Editor prefEditor;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentSingleFrequencyBinding.inflate(inflater, container, false);
-        array = getActivity().getResources().getStringArray(R.array.wave_type);
         spinnerRowBinding = SpinnerRowBinding.inflate(getLayoutInflater());
+        settings = Objects.requireNonNull(this.getActivity()).getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
         View view = binding.getRoot();
-        MyCustomAdapter adapter = new MyCustomAdapter(this.getActivity(), R.layout.spinner_row, array);
-        adapter.setDropDownViewResource(R.layout.spinner_row);
-        binding.spinnerWaveType.setAdapter(adapter);
+        initSpinnerWaveType();
         initSeekBar();
         initIncreaseButton();
         initDecreaseButton();
@@ -120,8 +119,22 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         setEditTextSelection();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        float frequency = Float.parseFloat(binding.editTextFrequency.getText().toString());
+        String type = binding.spinnerWaveType.getSelectedItem().toString().toUpperCase();
+        int volume = binding.seekBarVolume.getProgress();
+        prefEditor = settings.edit();
+        prefEditor.putFloat(PREFS_FREQUENCY, frequency);
+        prefEditor.putString(PREFS_WAVE_TYPE,type);
+        prefEditor.putInt(PREFS_VOLUME, volume);
+        prefEditor.apply();
+    }
+
     private void initEditTextFrequency() {
-        binding.editTextFrequency.setText(String.valueOf(200));
+        float frequency  = settings.getFloat(PREFS_FREQUENCY, 200);
+        binding.editTextFrequency.setText(String.valueOf(frequency));
         binding.editTextFrequency.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,6 +152,19 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
                 return false;
             }
         });
+    }
+
+    private void initSpinnerWaveType(){
+        spinnerItems = Objects.requireNonNull(getActivity()).getResources().getStringArray(R.array.wave_type);
+        MyCustomAdapter adapter = new MyCustomAdapter(this.getActivity(), R.layout.spinner_row, spinnerItems);
+        adapter.setDropDownViewResource(R.layout.spinner_row);
+        binding.spinnerWaveType.setAdapter(adapter);
+        String type = settings.getString(PREFS_WAVE_TYPE, "SINE");
+        for(int i = 0;i<spinnerItems.length;i++)
+            if(spinnerItems[i].toUpperCase().equals(type)) {
+                binding.spinnerWaveType.setSelection(i);
+                break;
+            }
     }
 
 
@@ -253,6 +279,8 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     public void initSeekBarVolume() {
         binding.seekBarVolume.setMax(100);
+        int volume = settings.getInt(PREFS_VOLUME,100);
+        binding.seekBarVolume.setProgress(volume);
         mainPresenter.initVolumeElements();
     }
 
@@ -318,7 +346,9 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
             @Override
             public void onClick(View v) {
                 v.startAnimation(new AlphaAnimation(1F, 0.8F));
-                if (binding.seekBarVolume.getVisibility() == View.GONE) {
+                DialogFragment dialogFragment = new VolumeDialogFragment();
+                dialogFragment.show(getActivity().getSupportFragmentManager(), "TAG");
+             /*   if (binding.seekBarVolume.getVisibility() == View.GONE) {
                     TransitionManager.beginDelayedTransition(binding.layout, new AutoTransition());
                     binding.seekBarVolume.setVisibility(View.VISIBLE);
                     Observable<Integer> observable =  seekBarVolumeObserve();
@@ -328,7 +358,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
                     TransitionManager.beginDelayedTransition(binding.layout, new AutoTransition());
                     binding.seekBarVolume.setVisibility(View.GONE);
                     seekBarVolumeDisposable.dispose();
-                }
+                }*/
             }
         });
     }
@@ -361,6 +391,16 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
                 return true;
             }
         });
+    }
+
+    @Override
+    public void confirmButtonClicked() {
+
+    }
+
+    @Override
+    public void cancelButtonClicked() {
+
     }
 
 

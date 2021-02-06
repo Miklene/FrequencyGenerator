@@ -20,6 +20,10 @@
     <style name="SeekBarWhiteStyle" parent="Widget.AppCompat.SeekBar">
         <item name="colorAccent">@color/white</item>
     </style>
+    <style name="SeekBarBalanceStyle" parent="Widget.AppCompat.SeekBar">
+        <item name="colorAccent">@color/blue</item>
+        <item name="android:progressTint">@android:color/transparent</item>
+    </style>
     <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
         <item name="colorAccent">@color/blue</item>
     </style>

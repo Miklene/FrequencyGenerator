@@ -9,5 +9,11 @@
         <item>Треугольная</item>
         <item>Меандр</item>
     </string-array>
+    <string name="button_play_stop">Воспроизвести/Остановить</string>
     <string name="frequency">Частота</string>
+    <!--DialogFragmentVolume-->
+    <string name="volume">Громкость</string>
+    <string name="balance">Баланс звука</string>
+    <string name="left_channel">Левый канал</string>
+    <string name="right_channel">Правый канал</string>
 </resources>

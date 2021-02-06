@@ -1,3 +1,3 @@
 package com.miklene.frequencygenerator.wave;
 
-public enum WaveType {SINE, SAW, TRIANGLE, SQUARE}
+public enum WaveType {SINE, SAWTOOTH, TRIANGLE, SQUARE}
