@@ -5,4 +5,8 @@ import com.arellomobile.mvp.MvpPresenter;
 
 @InjectViewState
 public class VolumePresenter extends MvpPresenter<VolumeView> {
+
+
+
+
 }

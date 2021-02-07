@@ -34,6 +34,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.jakewharton.rxbinding4.widget.RxSeekBar;
 import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.miklene.frequencygenerator.R;
+import com.miklene.frequencygenerator.activity.volume.VolumePresenter;
 import com.miklene.frequencygenerator.databinding.FragmentSingleFrequencyBinding;
 import com.miklene.frequencygenerator.databinding.SpinnerRowBinding;
 
@@ -54,6 +55,8 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     @InjectPresenter
     MainPresenter mainPresenter;
 
+    @InjectPresenter
+    VolumePresenter volumePresenter;
 
 
     private FragmentSingleFrequencyBinding binding;
