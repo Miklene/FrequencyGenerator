@@ -38,4 +38,9 @@ public class SineWave extends Wave {
         }
         return max;
     }
+
+    @Override
+    public String toString() {
+        return "Sine";
+    }
 }

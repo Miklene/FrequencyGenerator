@@ -31,11 +31,24 @@ public abstract class Wave implements RecordParameters {
         Log.d("TAG", String.valueOf(durationPerSampleRate));
     }
 
+    public float getFrequency() {
+        return frequency;
+    }
+
+    public double getAmplitude() {
+        return amplitude;
+    }
+
     public double getPhase() {
         return phase;
     }
 
     public void setPhase(double phase) {
         this.phase = phase;
+    }
+
+    @Override
+    public String toString() {
+        return "Wave";
     }
 }
