@@ -13,7 +13,6 @@ import java.util.ArrayList;
 public abstract class Wave implements RecordParameters {
 
     long id = 0;
-    WaveType type;
     float frequency;
     double amplitude;
     double phase;
@@ -30,14 +29,6 @@ public abstract class Wave implements RecordParameters {
         phase = phase + durationPerSampleRate / period;
         phase -= (int) phase;
         Log.d("TAG", String.valueOf(durationPerSampleRate));
-    }
-
-    public WaveType getType() {
-        return type;
-    }
-
-    public void setType(WaveType type) {
-        this.type = type;
     }
 
     public double getPhase() {
