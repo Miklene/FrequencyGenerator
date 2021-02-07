@@ -31,12 +31,18 @@ import androidx.fragment.app.DialogFragment;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.jakewharton.rxbinding4.widget.RxSeekBar;
 import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.miklene.frequencygenerator.R;
+import com.miklene.frequencygenerator.activity.shared_pref.SharedPrefPresenter;
+import com.miklene.frequencygenerator.activity.shared_pref.SharedPrefView;
 import com.miklene.frequencygenerator.activity.volume.VolumePresenter;
+import com.miklene.frequencygenerator.activity.volume.VolumeView;
 import com.miklene.frequencygenerator.databinding.FragmentSingleFrequencyBinding;
 import com.miklene.frequencygenerator.databinding.SpinnerRowBinding;
+import com.miklene.frequencygenerator.repository.SharedPrefRepository;
+import com.miklene.frequencygenerator.repository.WaveRepository;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +55,8 @@ import io.reactivex.rxjava3.observers.DisposableObserver;
 import static android.widget.Toast.makeText;
 
 
-public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView, VolumeDialogFragment.VolumeListener {
+public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView,
+        VolumeDialogFragment.VolumeListener, SharedPrefView, VolumeView {
     public static final String ARG_PAGE = "ARG_PAGE";
 
     @InjectPresenter
@@ -57,6 +64,16 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     @InjectPresenter
     VolumePresenter volumePresenter;
+
+    @InjectPresenter
+    SharedPrefPresenter sharedPrefPresenter;
+
+    @ProvidePresenter
+    SharedPrefPresenter provideSharedPrefRepository() {
+        preferences = Objects.requireNonNull(this.getActivity())
+                .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
+        return new SharedPrefPresenter(new SharedPrefRepository(preferences));
+    }
 
 
     private FragmentSingleFrequencyBinding binding;
@@ -76,23 +93,21 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     private DisposableObserver<Long> seekBarDisposable;
     private Disposable seekBarVolumeDisposable;
     private Observable<Long> observable;
-    private int repeats = 0;
     private int cursorPosition;
 
     private static final String PREFS_FILE = "Wave";
     private static final String PREFS_FREQUENCY = "Frequency";
     private static final String PREFS_WAVE_TYPE = "WaveType";
     private static final String PREFS_VOLUME = "Volume";
-    private SharedPreferences settings;
+    private SharedPreferences preferences;
     private SharedPreferences.Editor prefEditor;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentSingleFrequencyBinding.inflate(inflater, container, false);
-        spinnerRowBinding = SpinnerRowBinding.inflate(getLayoutInflater());
-        settings = Objects.requireNonNull(this.getActivity()).getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
         View view = binding.getRoot();
+        spinnerRowBinding = SpinnerRowBinding.inflate(getLayoutInflater());
         initSpinnerWaveType();
         initSeekBar();
         initIncreaseButton();
@@ -100,6 +115,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         initEditTextFrequency();
         initVolumeButton();
         initSeekBarVolume();
+        sharedPrefPresenter.load();
         binding.imageButtonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,19 +141,22 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     @Override
     public void onPause() {
         super.onPause();
-        float frequency = Float.parseFloat(binding.editTextFrequency.getText().toString());
+        //Presenter
         String type = binding.spinnerWaveType.getSelectedItem().toString().toUpperCase();
+        float frequency = Float.parseFloat(binding.editTextFrequency.getText().toString());
         int volume = binding.seekBarVolume.getProgress();
-        prefEditor = settings.edit();
+        sharedPrefPresenter.save(type, frequency, volume);
+        /*prefEditor = preferences.edit();
         prefEditor.putFloat(PREFS_FREQUENCY, frequency);
         prefEditor.putString(PREFS_WAVE_TYPE,type);
         prefEditor.putInt(PREFS_VOLUME, volume);
-        prefEditor.apply();
+        prefEditor.apply();*/
     }
 
     private void initEditTextFrequency() {
-        float frequency  = settings.getFloat(PREFS_FREQUENCY, 200);
-        binding.editTextFrequency.setText(String.valueOf(frequency));
+        //Presenter
+        /*float frequency  = preferences.getFloat(PREFS_FREQUENCY, 200);
+        binding.editTextFrequency.setText(String.valueOf(frequency));*/
         binding.editTextFrequency.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,17 +176,18 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         });
     }
 
-    private void initSpinnerWaveType(){
+    private void initSpinnerWaveType() {
         spinnerItems = Objects.requireNonNull(getActivity()).getResources().getStringArray(R.array.wave_type);
         MyCustomAdapter adapter = new MyCustomAdapter(this.getActivity(), R.layout.spinner_row, spinnerItems);
         adapter.setDropDownViewResource(R.layout.spinner_row);
         binding.spinnerWaveType.setAdapter(adapter);
-        String type = settings.getString(PREFS_WAVE_TYPE, "SINE");
+        //Presenter
+        /*String type = preferences.getString(PREFS_WAVE_TYPE, "SINE");
         for(int i = 0;i<spinnerItems.length;i++)
             if(spinnerItems[i].toUpperCase().equals(type)) {
                 binding.spinnerWaveType.setSelection(i);
                 break;
-            }
+            }*/
     }
 
 
@@ -282,14 +302,15 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     public void initSeekBarVolume() {
         binding.seekBarVolume.setMax(100);
-        int volume = settings.getInt(PREFS_VOLUME,100);
-        binding.seekBarVolume.setProgress(volume);
+        //Presenter
+       /* int volume = preferences.getInt(PREFS_VOLUME,100);
+        binding.seekBarVolume.setProgress(volume);*/
         mainPresenter.initVolumeElements();
     }
 
-    private Observable<Integer> seekBarVolumeObserve(){
-        return  RxSeekBar.changes(binding.seekBarVolume)
-                .debounce(10,TimeUnit.MILLISECONDS)
+    private Observable<Integer> seekBarVolumeObserve() {
+        return RxSeekBar.changes(binding.seekBarVolume)
+                .debounce(10, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -403,6 +424,26 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     @Override
     public void cancelButtonClicked() {
+
+    }
+
+    @Override
+    public void setSeekBarFrequencyProgress(int progress) {
+
+    }
+
+    @Override
+    public void setEditTextValue(float frequency) {
+        binding.editTextFrequency.setText(String.valueOf(frequency));
+    }
+
+    @Override
+    public void setSpinnerWaveType() {
+
+    }
+
+    @Override
+    public void setVolumeValue() {
 
     }
 

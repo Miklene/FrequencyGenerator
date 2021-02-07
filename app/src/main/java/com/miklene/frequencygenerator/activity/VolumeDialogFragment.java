@@ -16,13 +16,14 @@ import androidx.fragment.app.DialogFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.activity.volume.VolumePresenter;
+import com.miklene.frequencygenerator.activity.volume.VolumeView;
 import com.miklene.frequencygenerator.databinding.FragmentDialogVolumeBinding;
 import com.miklene.frequencygenerator.databinding.FragmentSingleFrequencyBinding;
 
 import org.jetbrains.annotations.NotNull;
 
 
-public class VolumeDialogFragment extends DialogFragment {
+public class VolumeDialogFragment extends DialogFragment implements VolumeView {
 
     @InjectPresenter
     VolumePresenter volumePresenter;
