@@ -35,9 +35,9 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.jakewharton.rxbinding4.widget.RxSeekBar;
 import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.miklene.frequencygenerator.R;
-import com.miklene.frequencygenerator.mvp.presenters.MainPresenter;
+import com.miklene.frequencygenerator.mvp.presenters.SingleFrequencyPresenter;
 import com.miklene.frequencygenerator.mvp.presenters.SharedPrefPresenter;
-import com.miklene.frequencygenerator.mvp.views.PlaybackView;
+import com.miklene.frequencygenerator.mvp.views.SingleFrequencyView;
 import com.miklene.frequencygenerator.mvp.views.SharedPrefView;
 import com.miklene.frequencygenerator.mvp.presenters.VolumePresenter;
 import com.miklene.frequencygenerator.mvp.views.VolumeView;
@@ -56,12 +56,12 @@ import io.reactivex.rxjava3.observers.DisposableObserver;
 import static android.widget.Toast.makeText;
 
 
-public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView,
+public class SingleFrequencyFragment extends MvpAppCompatFragment implements SingleFrequencyView,
         VolumeDialogFragment.VolumeListener, SharedPrefView, VolumeView {
     public static final String ARG_PAGE = "ARG_PAGE";
 
     @InjectPresenter
-    MainPresenter mainPresenter;
+    SingleFrequencyPresenter singleFrequencyPresenter;
 
     @InjectPresenter
     VolumePresenter volumePresenter;
@@ -121,7 +121,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
             @Override
             public void onClick(View v) {
                 v.startAnimation(new AlphaAnimation(1F, 0.8F));
-                mainPresenter.onImageButtonPlayClicked();
+                singleFrequencyPresenter.onImageButtonPlayClicked();
             }
         });
         return view;
@@ -207,7 +207,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
             public void onNext(@io.reactivex.rxjava3.annotations.NonNull String s) {
                 cursorPosition = binding.editTextFrequency.getText().toString().length() -
                         binding.editTextFrequency.getSelectionStart();
-                mainPresenter.onEditTextTextChanges(s);
+                singleFrequencyPresenter.onEditTextTextChanges(s);
             }
 
             @Override
@@ -268,7 +268,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
                 seekBarDisposable = new DisposableObserver<Long>() {
                     @Override
                     public void onNext(@io.reactivex.rxjava3.annotations.NonNull Long l) {
-                        mainPresenter.seekBarProgressChanged(binding.seekBarFrequency.getProgress());
+                        singleFrequencyPresenter.seekBarProgressChanged(binding.seekBarFrequency.getProgress());
                     }
 
                     @Override
@@ -306,7 +306,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         //Presenter
        /* int volume = preferences.getInt(PREFS_VOLUME,100);
         binding.seekBarVolume.setProgress(volume);*/
-        mainPresenter.initVolumeElements();
+        singleFrequencyPresenter.initVolumeElements();
     }
 
     private Observable<Integer> seekBarVolumeObserve() {
@@ -393,10 +393,10 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
-                    mainPresenter.onImageButtonIncreaseDown();
+                    singleFrequencyPresenter.onImageButtonIncreaseDown();
                 if (event.getActionMasked() == MotionEvent.ACTION_UP) {
                     binding.imageButtonIncreaseFrequency.performClick();
-                    mainPresenter.onImageButtonIncreaseUp();
+                    singleFrequencyPresenter.onImageButtonIncreaseUp();
                 }
                 return true;
             }
@@ -408,10 +408,10 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
-                    mainPresenter.onImageButtonDecreaseDown();
+                    singleFrequencyPresenter.onImageButtonDecreaseDown();
                 if (event.getActionMasked() == MotionEvent.ACTION_UP) {
                     binding.imageButtonDecreaseFrequency.performClick();
-                    mainPresenter.onImageButtonDecreaseUp();
+                    singleFrequencyPresenter.onImageButtonDecreaseUp();
                 }
                 return true;
             }
@@ -453,7 +453,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
             super.onTouchEvent(event);
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
-                    mainPresenter.onImageButtonIncreaseDown();
+                    singleFrequencyPresenter.onImageButtonIncreaseDown();
                     break;
                 case MotionEvent.ACTION_UP:
                     performClick();
@@ -465,7 +465,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         @Override
         public boolean performClick() {
             super.performClick();
-            mainPresenter.onImageButtonIncreaseUp();
+            singleFrequencyPresenter.onImageButtonIncreaseUp();
             return true;
         }
     }

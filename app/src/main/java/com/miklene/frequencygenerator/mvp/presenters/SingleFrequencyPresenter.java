@@ -3,7 +3,7 @@ package com.miklene.frequencygenerator.mvp.presenters;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.miklene.frequencygenerator.R;
-import com.miklene.frequencygenerator.mvp.views.PlaybackView;
+import com.miklene.frequencygenerator.mvp.views.SingleFrequencyView;
 import com.miklene.frequencygenerator.player.PlayerState;
 import com.miklene.frequencygenerator.player.WavePlayer;
 import com.miklene.frequencygenerator.wave.SineWave;
@@ -18,7 +18,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.observers.DisposableObserver;
 
 @InjectViewState
-public class MainPresenter extends MvpPresenter<PlaybackView> {
+public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> {
 
     private WavePlayer wavePlayer = WavePlayer.getInstance();
     private float frequency = 200;
@@ -28,7 +28,7 @@ public class MainPresenter extends MvpPresenter<PlaybackView> {
     private int step = 1;
     private DisposableObserver<Long> disposable;
 
-    public MainPresenter() {
+    public SingleFrequencyPresenter() {
     }
 
     public void onEditTextTextChanges(String text) {
