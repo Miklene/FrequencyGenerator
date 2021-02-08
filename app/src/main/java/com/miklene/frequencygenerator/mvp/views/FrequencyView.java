@@ -4,4 +4,6 @@ import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpView;
 
 public interface FrequencyView extends MvpView {
+
+    void setFrequency(float frequency);
 }

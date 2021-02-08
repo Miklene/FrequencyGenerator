@@ -6,4 +6,6 @@ import com.miklene.frequencygenerator.mvp.views.BalanceView;
 
 @InjectViewState
 public class BalancePresenter extends MvpPresenter<BalanceView> {
+
+
 }
