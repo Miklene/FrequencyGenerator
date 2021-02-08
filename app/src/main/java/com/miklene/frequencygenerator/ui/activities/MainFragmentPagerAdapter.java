@@ -1,4 +1,4 @@
-package com.miklene.frequencygenerator.activity;
+package com.miklene.frequencygenerator.ui.activities;
 
 import android.content.Context;
 

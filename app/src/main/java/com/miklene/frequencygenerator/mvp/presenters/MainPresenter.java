@@ -1,8 +1,9 @@
-package com.miklene.frequencygenerator.activity;
+package com.miklene.frequencygenerator.mvp.presenters;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.miklene.frequencygenerator.R;
+import com.miklene.frequencygenerator.mvp.views.PlaybackView;
 import com.miklene.frequencygenerator.player.PlayerState;
 import com.miklene.frequencygenerator.player.WavePlayer;
 import com.miklene.frequencygenerator.wave.SineWave;
@@ -14,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.observers.DisposableObserver;
 
 @InjectViewState
@@ -95,9 +95,9 @@ public class MainPresenter extends MvpPresenter<PlaybackView> {
     }
 
     public void initVolumeElements() {
-        getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
+     /*   getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
         getViewState().setTextViewVolumeValue(getStringValueOfVolume(volume));
-        getViewState().setSeekBarVolumeProgress(volume);
+        getViewState().setSeekBarVolumeProgress(volume);*/
     }
 
     public void seekBarProgressChanged(int progress) {
@@ -122,13 +122,13 @@ public class MainPresenter extends MvpPresenter<PlaybackView> {
     }
 
     private String formatStringValue(float value) {
-        return String.format("%.2f", value);
+        return String.format(Locale.getDefault(),"%.2f", value);
     }
 
     private float formatFloatValue(float value) {
         double scale = Math.pow(10, 2);
         double res = Math.round(value * scale) / scale;
-        String result = String.format("%.2f", res);
+        String result = String.format(Locale.getDefault(),"%.2f", res);
         return Float.parseFloat(result);
     }
 

@@ -1,4 +1,4 @@
-package com.miklene.frequencygenerator.activity;
+package com.miklene.frequencygenerator.ui.activities;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -15,10 +15,9 @@ import androidx.fragment.app.DialogFragment;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.miklene.frequencygenerator.R;
-import com.miklene.frequencygenerator.activity.volume.VolumePresenter;
-import com.miklene.frequencygenerator.activity.volume.VolumeView;
+import com.miklene.frequencygenerator.mvp.presenters.VolumePresenter;
+import com.miklene.frequencygenerator.mvp.views.VolumeView;
 import com.miklene.frequencygenerator.databinding.FragmentDialogVolumeBinding;
-import com.miklene.frequencygenerator.databinding.FragmentSingleFrequencyBinding;
 
 import org.jetbrains.annotations.NotNull;
 

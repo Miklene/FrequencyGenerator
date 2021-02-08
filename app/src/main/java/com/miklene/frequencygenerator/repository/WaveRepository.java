@@ -4,6 +4,12 @@ import com.miklene.frequencygenerator.wave.Wave;
 
 public interface WaveRepository {
 
-    void save(Wave wave);
-    Wave load();
+    void saveVolume(int volume);
+    int loadVolume();
+    void saveFrequency(float frequency);
+    float loadFrequency();
+    void saveWaveType(String waveType);
+    String loadWaveType();
+    void saveAll(Wave wave);
+    Wave loadAll();
 }

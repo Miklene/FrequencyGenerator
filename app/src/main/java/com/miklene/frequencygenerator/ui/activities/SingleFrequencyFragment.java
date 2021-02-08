@@ -1,4 +1,4 @@
-package com.miklene.frequencygenerator.activity;
+package com.miklene.frequencygenerator.ui.activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -35,14 +35,15 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.jakewharton.rxbinding4.widget.RxSeekBar;
 import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.miklene.frequencygenerator.R;
-import com.miklene.frequencygenerator.activity.shared_pref.SharedPrefPresenter;
-import com.miklene.frequencygenerator.activity.shared_pref.SharedPrefView;
-import com.miklene.frequencygenerator.activity.volume.VolumePresenter;
-import com.miklene.frequencygenerator.activity.volume.VolumeView;
+import com.miklene.frequencygenerator.mvp.presenters.MainPresenter;
+import com.miklene.frequencygenerator.mvp.presenters.SharedPrefPresenter;
+import com.miklene.frequencygenerator.mvp.views.PlaybackView;
+import com.miklene.frequencygenerator.mvp.views.SharedPrefView;
+import com.miklene.frequencygenerator.mvp.presenters.VolumePresenter;
+import com.miklene.frequencygenerator.mvp.views.VolumeView;
 import com.miklene.frequencygenerator.databinding.FragmentSingleFrequencyBinding;
 import com.miklene.frequencygenerator.databinding.SpinnerRowBinding;
-import com.miklene.frequencygenerator.repository.SharedPrefRepository;
-import com.miklene.frequencygenerator.repository.WaveRepository;
+import com.miklene.frequencygenerator.repository.PreferencesRepository;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -72,7 +73,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     SharedPrefPresenter provideSharedPrefRepository() {
         preferences = Objects.requireNonNull(this.getActivity())
                 .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        return new SharedPrefPresenter(new SharedPrefRepository(preferences));
+        return new SharedPrefPresenter(new PreferencesRepository(preferences));
     }
 
 
@@ -429,24 +430,13 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     @Override
     public void setSeekBarFrequencyProgress(int progress) {
-
-    }
-
-    @Override
-    public void setEditTextValue(float frequency) {
-        binding.editTextFrequency.setText(String.valueOf(frequency));
+        binding.seekBarFrequency.setProgress(progress);
     }
 
     @Override
     public void setSpinnerWaveType() {
 
     }
-
-    @Override
-    public void setVolumeValue() {
-
-    }
-
 
     public class CustomImageButton extends AppCompatImageButton {
 

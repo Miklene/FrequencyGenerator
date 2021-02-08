@@ -1,4 +1,4 @@
-package com.miklene.frequencygenerator.activity;
+package com.miklene.frequencygenerator.mvp.views;
 
 import com.arellomobile.mvp.MvpView;
 
