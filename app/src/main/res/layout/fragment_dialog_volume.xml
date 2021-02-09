@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/Theme.FrequencyGenerator"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:theme="@style/Theme.FrequencyGenerator">
 
 
     <TextView
@@ -15,19 +15,39 @@
         android:layout_marginBottom="5dp"
         android:text="@string/volume"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/seekBarVolume"
+        app:layout_constraintBottom_toTopOf="@+id/parentRelative"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <SeekBar
-        android:id="@+id/seekBarVolume"
+    <RelativeLayout
+        android:id="@+id/parentRelative"
         android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:theme="@style/SeekBarStyle"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewVolume" />
+        app:layout_constraintTop_toBottomOf="@id/textViewVolume">
+
+        <SeekBar
+            android:id="@+id/seekBarVolume"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toStartOf="@id/textViewVolumeValue"
+            android:theme="@style/SeekBarStyle" />
+
+        <TextView
+            android:id="@+id/textViewVolumeValue"
+            android:layout_width="36dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:textSize="12sp" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/textViewBalance"
@@ -38,7 +58,7 @@
         android:text="@string/balance"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBarVolume" />
+        app:layout_constraintTop_toBottomOf="@+id/parentRelative" />
 
     <SeekBar
         android:id="@+id/seekBarBalance"
@@ -58,6 +78,7 @@
         android:textSize="12sp"
         app:layout_constraintLeft_toLeftOf="@id/seekBarBalance"
         app:layout_constraintTop_toBottomOf="@+id/seekBarBalance" />
+
     <TextView
         android:id="@+id/textViewLeftChannelValue"
         android:layout_width="wrap_content"

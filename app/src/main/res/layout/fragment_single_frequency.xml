@@ -6,18 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/grey">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/imageButtonVolume"
-        app:layout_constraintEnd_toStartOf="@+id/spinnerWaveType"
-        app:layout_constraintStart_toEndOf="@+id/imageButtonVolume"
-        android:padding="5dp">
-
-
-    </androidx.cardview.widget.CardView>
-
     <Spinner
         android:id="@+id/spinnerWaveType"
         android:layout_width="wrap_content"
@@ -26,18 +14,6 @@
         android:background="@color/grey"
         app:layout_constraintBottom_toTopOf="@+id/textViewVolume"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <com.miklene.frequencygenerator.view.VerticalSeekBar
-        android:id="@+id/seekBarVolume"
-        android:layout_width="24dp"
-        android:layout_height="150dp"
-        android:layout_margin="5dp"
-        android:background="@drawable/blue_rectangle"
-        android:theme="@style/SeekBarWhiteStyle"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/imageButtonVolume"
-        app:layout_constraintEnd_toEndOf="@+id/imageButtonVolume"
-        app:layout_constraintStart_toStartOf="@+id/imageButtonVolume" />
 
     <ImageButton
         android:id="@+id/imageButtonVolume"

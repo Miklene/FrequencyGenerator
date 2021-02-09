@@ -73,7 +73,7 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
         }
     }
 
-    public void seekBarVolumeProgressChanged(int progress) {
+   /* public void seekBarVolumeProgressChanged(int progress) {
         volume = progress;
         getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
         getViewState().setTextViewVolumeValue(getStringValueOfVolume(volume));
@@ -95,10 +95,10 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
     }
 
     public void initVolumeElements() {
-     /*   getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
+        getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
         getViewState().setTextViewVolumeValue(getStringValueOfVolume(volume));
-        getViewState().setSeekBarVolumeProgress(volume);*/
-    }
+        getViewState().setSeekBarVolumeProgress(volume);
+    }*/
 
     public void seekBarProgressChanged(int progress) {
         if (progress == 14425215)

@@ -24,7 +24,7 @@ public class PreferencesRepository implements WaveRepository{
 
     @Override
     public void saveVolume(int volume) {
-        getEditor().putInt(PREFS_VOLUME,volume);
+        getEditor().putInt(PREFS_VOLUME,volume).apply();
     }
 
     @Override
@@ -34,7 +34,7 @@ public class PreferencesRepository implements WaveRepository{
 
     @Override
     public void saveFrequency(float frequency) {
-        getEditor().putFloat(PREFS_FREQUENCY, frequency);
+        getEditor().putFloat(PREFS_FREQUENCY, frequency).apply();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class PreferencesRepository implements WaveRepository{
 
     @Override
     public void saveWaveType(String waveType) {
-        getEditor().putString(PREFS_WAVE_TYPE, waveType);
+        getEditor().putString(PREFS_WAVE_TYPE, waveType).apply();
     }
 
     @Override

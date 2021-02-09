@@ -12,7 +12,7 @@ public interface SingleFrequencyView extends MvpView {
     void disposeEditTextObservable();
     void setTextViewVolumeValue(String volumeValue);
     void setImageButtonVolumeSrc(int drawableId);
-    void setSeekBarVolumeProgress(int progress);
+   // void setSeekBarVolumeProgress(int progress);
     //int getUserSeekBarValue();
     //void setUserSeekBarValue(int userSeekBarValue);
 

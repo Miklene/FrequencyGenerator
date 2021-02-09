@@ -63,7 +63,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     @InjectPresenter
     SingleFrequencyPresenter singleFrequencyPresenter;
 
-    @InjectPresenter
+    @InjectPresenter()
     VolumePresenter volumePresenter;
 
     @InjectPresenter
@@ -74,6 +74,13 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         preferences = Objects.requireNonNull(this.getActivity())
                 .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
         return new SharedPrefPresenter(new PreferencesRepository(preferences));
+    }
+
+    @ProvidePresenter
+    VolumePresenter provideVolumePresenter(){
+        preferences = Objects.requireNonNull(this.getActivity())
+                .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
+        return new VolumePresenter(new PreferencesRepository(preferences));
     }
 
 
@@ -115,8 +122,8 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         initDecreaseButton();
         initEditTextFrequency();
         initVolumeButton();
-        initSeekBarVolume();
-        sharedPrefPresenter.load();
+        initVolume();
+        //sharedPrefPresenter.load();
         binding.imageButtonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,30 +135,24 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public void onPause() {
+        super.onPause();
+        //Presenter
+       /* String type = binding.spinnerWaveType.getSelectedItem().toString().toUpperCase();
+        float frequency = Float.parseFloat(binding.editTextFrequency.getText().toString());
+        int volume = binding.seekBarVolume.getProgress();
+        sharedPrefPresenter.save(type, frequency, volume);*/
+        /*prefEditor = preferences.edit();
+        prefEditor.putFloat(PREFS_FREQUENCY, frequency);
+        prefEditor.putString(PREFS_WAVE_TYPE,type);
+        prefEditor.putInt(PREFS_VOLUME, volume);
+        prefEditor.apply();*/
     }
 
     @Override
     public void setEditTextValue(String value) {
         binding.editTextFrequency.setText(value);
         setEditTextSelection();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        //Presenter
-        String type = binding.spinnerWaveType.getSelectedItem().toString().toUpperCase();
-        float frequency = Float.parseFloat(binding.editTextFrequency.getText().toString());
-        int volume = binding.seekBarVolume.getProgress();
-        sharedPrefPresenter.save(type, frequency, volume);
-        /*prefEditor = preferences.edit();
-        prefEditor.putFloat(PREFS_FREQUENCY, frequency);
-        prefEditor.putString(PREFS_WAVE_TYPE,type);
-        prefEditor.putInt(PREFS_VOLUME, volume);
-        prefEditor.apply();*/
     }
 
     private void initEditTextFrequency() {
@@ -191,7 +192,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
             }*/
     }
 
-
     @Override
     public void subscribeEditTextObservable() {
         Observable<String> observable = RxTextView.textChanges(binding.editTextFrequency)
@@ -230,15 +230,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         }
     }
 
-    @Override
-    public void setTextViewVolumeValue(String volumeValue) {
-        binding.textViewVolume.setText(volumeValue);
-    }
 
-    @Override
-    public void setImageButtonVolumeSrc(int drawableId) {
-        binding.imageButtonVolume.setImageResource(drawableId);
-    }
 
     private void setEditTextSelection() {
         int position = binding.editTextFrequency.getText().toString().length();
@@ -288,8 +280,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Toast toast = Toast.makeText(getActivity(), "Dispose", Toast.LENGTH_SHORT);
-                toast.show();
                 if (seekBarDisposable != null)
                     seekBarDisposable.dispose();
             }
@@ -301,24 +291,56 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         binding.editTextFrequency.setText(String.valueOf(200));
     }
 
-    public void initSeekBarVolume() {
-        binding.seekBarVolume.setMax(100);
-        //Presenter
-       /* int volume = preferences.getInt(PREFS_VOLUME,100);
-        binding.seekBarVolume.setProgress(volume);*/
-        singleFrequencyPresenter.initVolumeElements();
+    //Volume//
+    public void initVolume() {
+        volumePresenter.initVolume();
     }
 
-    private Observable<Integer> seekBarVolumeObserve() {
-        return RxSeekBar.changes(binding.seekBarVolume)
-                .debounce(10, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread());
+    private void initVolumeButton() {
+        binding.imageButtonVolume.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.startAnimation(new AlphaAnimation(1F, 0.8F));
+                DialogFragment dialogFragment = new VolumeDialogFragment();
+                dialogFragment.show(Objects.requireNonNull(getActivity())
+                        .getSupportFragmentManager(), "TAG");
+             /*   if (binding.seekBarVolume.getVisibility() == View.GONE) {
+                    TransitionManager.beginDelayedTransition(binding.layout, new AutoTransition());
+                    binding.seekBarVolume.setVisibility(View.VISIBLE);
+                    Observable<Integer> observable =  seekBarVolumeObserve();
+                    seekBarVolumeDisposable = observable
+                            .subscribe(integer -> mainPresenter.seekBarVolumeProgressChanged(integer));
+                } else {
+                    TransitionManager.beginDelayedTransition(binding.layout, new AutoTransition());
+                    binding.seekBarVolume.setVisibility(View.GONE);
+                    seekBarVolumeDisposable.dispose();
+                }*/
+            }
+        });
+    }
+
+    @Override
+    public void setTextViewVolumeValue(String volumeValue) {
+        binding.textViewVolume.setText(volumeValue);
+    }
+
+    @Override
+    public void setImageButtonVolumeSrc(int drawableId) {
+        binding.imageButtonVolume.setImageResource(drawableId);
     }
 
     @Override
     public void setSeekBarVolumeProgress(int progress) {
-        binding.seekBarVolume.setProgress(progress);
+
     }
+
+    /* private Observable<Integer> seekBarVolumeObserve() {
+        return RxSeekBar.changes(binding.seekBarVolume)
+                .debounce(10, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread());
+    }*/
+
+
 
     public void setSeekBarProgress(int progress) {
         binding.seekBarFrequency.setProgress(progress);
@@ -364,28 +386,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     @Override
     public void setImageButtonPlayBackground(int drawableId) {
         binding.imageButtonPlay.setImageResource(drawableId);
-    }
-
-    private void initVolumeButton() {
-        binding.imageButtonVolume.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.startAnimation(new AlphaAnimation(1F, 0.8F));
-                DialogFragment dialogFragment = new VolumeDialogFragment();
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "TAG");
-             /*   if (binding.seekBarVolume.getVisibility() == View.GONE) {
-                    TransitionManager.beginDelayedTransition(binding.layout, new AutoTransition());
-                    binding.seekBarVolume.setVisibility(View.VISIBLE);
-                    Observable<Integer> observable =  seekBarVolumeObserve();
-                    seekBarVolumeDisposable = observable
-                            .subscribe(integer -> mainPresenter.seekBarVolumeProgressChanged(integer));
-                } else {
-                    TransitionManager.beginDelayedTransition(binding.layout, new AutoTransition());
-                    binding.seekBarVolume.setVisibility(View.GONE);
-                    seekBarVolumeDisposable.dispose();
-                }*/
-            }
-        });
     }
 
     private void initIncreaseButton() {
