@@ -113,7 +113,7 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                observable = Observable.interval(25, TimeUnit.MILLISECONDS);
+                observable = Observable.interval(50, TimeUnit.MILLISECONDS);
                 seekBarDisposable = new DisposableObserver<Long>() {
                     @Override
                     public void onNext(@io.reactivex.rxjava3.annotations.NonNull Long l) {

@@ -7,6 +7,8 @@ import com.miklene.frequencygenerator.wave.SimpleWaveFactory;
 import com.miklene.frequencygenerator.wave.Wave;
 import com.miklene.frequencygenerator.wave.WaveType;
 
+import io.reactivex.rxjava3.core.Single;
+
 
 public class PreferencesRepository implements WaveRepository{
 
@@ -28,8 +30,12 @@ public class PreferencesRepository implements WaveRepository{
     }
 
     @Override
-    public int loadVolume() {
-        return preferences.getInt(PREFS_VOLUME,100);
+    public Single<Integer> loadVolume() {
+        return Single.create(subscriber ->{
+            subscriber.onSuccess(preferences.getInt(PREFS_VOLUME,100));
+        });
+      /*  return Single.create(singleEmitter->singleEmitter
+                .onSuccess(preferences.getInt(PREFS_VOLUME,100)));*/
     }
 
     @Override

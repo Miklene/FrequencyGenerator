@@ -6,14 +6,17 @@ import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.mvp.views.VolumeView;
 import com.miklene.frequencygenerator.repository.WaveRepository;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @InjectViewState
 public class VolumePresenter extends MvpPresenter<VolumeView> {
 
-    private WaveRepository sharedPrefRepository;
-    private Disposable disposable;
-    private VolumeInteractor volumeInteractor = VolumeInteractor.getInstance();
+    private final WaveRepository sharedPrefRepository;
+    private final Disposable disposable;
+    private final VolumeInteractor volumeInteractor = VolumeInteractor.getInstance();
 
     public VolumePresenter(WaveRepository sharedPrefRepository) {
         this.sharedPrefRepository = sharedPrefRepository;
@@ -21,13 +24,18 @@ public class VolumePresenter extends MvpPresenter<VolumeView> {
     }
 
     public void initVolume() {
-        int volume = (sharedPrefRepository.loadVolume());
-        setVolume(volume);
-        getViewState().setSeekBarVolumeProgress(volume);
+        sharedPrefRepository.loadVolume()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSuccess(this::setVolume)
+                .doOnSuccess(volume->getViewState().setSeekBarVolumeProgress(volume))
+                .subscribe();
     }
 
     public void seekBarVolumeProgressChanged(int volume) {
-        sharedPrefRepository.saveVolume(volume);
+        Completable.fromAction(()->sharedPrefRepository.saveVolume(volume))
+            .subscribeOn(Schedulers.io())
+            .subscribe();
         volumeInteractor.setVolume(volume);
         setVolume(volume);
     }
@@ -35,7 +43,6 @@ public class VolumePresenter extends MvpPresenter<VolumeView> {
     private void setVolume(int volume) {
         getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
         getViewState().setTextViewVolumeValue(getStringValueOfVolume(volume));
-
     }
 
     private int getVolumeSrc(int volume) {
@@ -49,12 +56,6 @@ public class VolumePresenter extends MvpPresenter<VolumeView> {
 
     private String getStringValueOfVolume(int volumeValue) {
         return volumeValue + "%";
-    }
-
-    public void initVolumeElements() {
-     /*   getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
-        getViewState().setTextViewVolumeValue(getStringValueOfVolume(volume));
-        getViewState().setSeekBarVolumeProgress(volume);*/
     }
 
     @Override

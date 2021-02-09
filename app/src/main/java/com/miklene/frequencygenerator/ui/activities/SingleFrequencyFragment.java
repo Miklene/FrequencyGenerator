@@ -293,7 +293,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
 
     //Volume//
     public void initVolume() {
-        volumePresenter.initVolume();
+       volumePresenter.initVolume();
     }
 
     private void initVolumeButton() {
