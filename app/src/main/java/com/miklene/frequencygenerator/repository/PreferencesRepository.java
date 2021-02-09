@@ -56,7 +56,7 @@ public class PreferencesRepository implements WaveRepository{
 
     @Override
     public void saveRightChannel(int right) {
-        getEditor().putInt(PREFS_RIGHT_CHANNEL,right);
+        getEditor().putInt(PREFS_RIGHT_CHANNEL,right).apply();
     }
 
     @Override
@@ -67,11 +67,12 @@ public class PreferencesRepository implements WaveRepository{
 
     @Override
     public void saveLeftChannel(int left) {
-        getEditor().putInt(PREFS_LEFT_CHANNEL,left);
+        getEditor().putInt(PREFS_LEFT_CHANNEL,left).apply();
     }
 
     @Override
     public Single<Integer> loadLeftChannel() {
+        int left = preferences.getInt(PREFS_LEFT_CHANNEL,100);
         return Single.create(subscriber ->
                 subscriber.onSuccess(preferences.getInt(PREFS_LEFT_CHANNEL,100)));
     }

@@ -76,7 +76,7 @@
         android:layout_height="wrap_content"
         android:text="@string/left_channel"
         android:textSize="12sp"
-        app:layout_constraintLeft_toLeftOf="@id/seekBarBalance"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/seekBarBalance" />
 
     <TextView
@@ -84,8 +84,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        app:layout_constraintLeft_toRightOf="@id/textViewLeftChannel"
-        app:layout_constraintTop_toBottomOf="@+id/seekBarBalance" />
+        app:layout_constraintRight_toRightOf="@id/textViewLeftChannel"
+        app:layout_constraintLeft_toLeftOf="@id/textViewLeftChannel"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLeftChannel" />
 
     <TextView
         android:id="@+id/textViewRightChannel"
@@ -93,7 +94,7 @@
         android:layout_height="wrap_content"
         android:text="@string/right_channel"
         android:textSize="12sp"
-        app:layout_constraintRight_toLeftOf="@id/textViewRightChannelValue"
+        app:layout_constraintRight_toRightOf= "parent"
         app:layout_constraintTop_toBottomOf="@+id/seekBarBalance" />
 
     <TextView
@@ -101,7 +102,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        app:layout_constraintRight_toRightOf="@id/seekBarBalance"
-        app:layout_constraintTop_toBottomOf="@+id/seekBarBalance" />
+        app:layout_constraintRight_toRightOf="@id/textViewRightChannel"
+        app:layout_constraintLeft_toLeftOf="@id/textViewRightChannel"
+        app:layout_constraintTop_toBottomOf="@+id/textViewRightChannel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
