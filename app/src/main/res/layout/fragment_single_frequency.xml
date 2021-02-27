@@ -21,9 +21,9 @@
         android:layout_height="42dp"
         android:layout_margin="10dp"
         android:background="@drawable/blue_ring"
-        android:src="@drawable/ic_baseline_volume_up_24"
         app:layout_constraintBottom_toTopOf="@+id/textViewVolume"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:contentDescription="@string/volume"/>
 
     <TextView
         android:id="@+id/textViewVolume"

@@ -4,12 +4,14 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
@@ -75,7 +77,7 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
     private DisposableObserver<Long> volumeDisposable;
     private Disposable balanceDisposable;
 
-    @Nullable
+   @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -84,6 +86,7 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
         initBalance();
         return view;
     }
+
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -96,6 +99,11 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException("Calling fragment must implement Callback interface");
         }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @SuppressLint("InflateParams")
