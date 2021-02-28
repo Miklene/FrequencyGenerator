@@ -77,7 +77,7 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
     private DisposableObserver<Long> volumeDisposable;
     private Disposable balanceDisposable;
 
-   @Nullable
+   /*@Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -85,7 +85,7 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
         initSeekBarVolume();
         initBalance();
         return view;
-    }
+    }*/
 
 
     @Override
@@ -192,6 +192,12 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
                     balanceDisposable.dispose();
             }
         });
+    }
+
+    @Override
+    public void initViews() {
+        initSeekBarVolume();
+        initBalance();
     }
 
     @Override

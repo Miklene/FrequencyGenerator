@@ -121,8 +121,8 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         initIncreaseButton();
         initDecreaseButton();
         initEditTextFrequency();
-        initVolumeButton();
-        initVolume();
+        //initVolumeButton();
+        //initVolume();
         //sharedPrefPresenter.load();
         binding.imageButtonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -301,6 +301,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
             @Override
             public void onClick(View v) {
                 v.startAnimation(new AlphaAnimation(1F, 0.8F));
+
                 DialogFragment dialogFragment = new VolumeDialogFragment();
                 dialogFragment.show(Objects.requireNonNull(getActivity())
                         .getSupportFragmentManager(), "TAG");
@@ -322,6 +323,12 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     @Override
     public void setTextViewVolumeValue(String volumeValue) {
         binding.textViewVolume.setText(volumeValue);
+    }
+
+    @Override
+    public void initViews() {
+        initVolumeButton();
+        initVolume();
     }
 
     @Override

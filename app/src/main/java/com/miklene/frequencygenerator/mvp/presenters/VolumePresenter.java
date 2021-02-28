@@ -23,6 +23,12 @@ public class VolumePresenter extends MvpPresenter<VolumeView> {
         disposable = volumeInteractor.getVolume().subscribe(this::setVolume);
     }
 
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        getViewState().initViews();
+    }
+
     public void initVolume() {
         sharedPrefRepository.loadVolume()
                 .subscribeOn(Schedulers.io())
