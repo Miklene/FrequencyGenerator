@@ -16,10 +16,12 @@ import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 import com.arellomobile.mvp.MvpAppCompatDialogFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.mvp.presenters.BalancePresenter;
 import com.miklene.frequencygenerator.mvp.presenters.VolumePresenter;
 import com.miklene.frequencygenerator.mvp.views.BalanceView;
@@ -104,13 +106,14 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+      //  setStyle(DialogFragment.STYLE_NO_TITLE, R.style.Theme_FrequencyGenerator);
     }
 
     @SuppressLint("InflateParams")
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),R.style.Theme_AppCompat_Light_Dialog);
         binding = FragmentDialogVolumeBinding.inflate(LayoutInflater.from(getContext()));
         builder.setView(binding.getRoot());
         return builder.create();

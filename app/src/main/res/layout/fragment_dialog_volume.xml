@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="10dp"
-    android:theme="@style/Theme.FrequencyGenerator">
+    android:background="@color/white"
+    android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
 
     <TextView
@@ -29,7 +30,7 @@
         <SeekBar
             android:id="@+id/seekBarVolume"
             android:layout_width="match_parent"
-            android:layout_height="24dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerInParent="true"
             android:layout_marginTop="5dp"
@@ -63,7 +64,7 @@
     <SeekBar
         android:id="@+id/seekBarBalance"
         android:layout_width="match_parent"
-        android:layout_height="24dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:theme="@style/SeekBarBalanceStyle"
