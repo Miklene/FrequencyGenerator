@@ -26,7 +26,7 @@ public class VolumePresenter extends MvpPresenter<VolumeView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-        getViewState().initViews();
+        getViewState().initVolumeViews();
     }
 
     public void initVolume() {

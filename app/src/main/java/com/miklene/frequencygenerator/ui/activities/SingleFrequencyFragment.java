@@ -326,7 +326,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     }
 
     @Override
-    public void initViews() {
+    public void initVolumeViews() {
         initVolumeButton();
         initVolume();
     }

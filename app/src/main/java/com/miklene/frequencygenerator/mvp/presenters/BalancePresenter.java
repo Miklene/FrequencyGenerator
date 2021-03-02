@@ -21,6 +21,12 @@ public class BalancePresenter extends MvpPresenter<BalanceView> {
         this.sharedPrefRepository = sharedPrefRepository;
     }
 
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        getViewState().initBalanceViews();
+    }
+
     public void initBalance() {
         sharedPrefRepository.loadRightChannel()
                 .subscribeOn(Schedulers.io())
@@ -45,12 +51,14 @@ public class BalancePresenter extends MvpPresenter<BalanceView> {
         }
         Completable.fromAction(()->sharedPrefRepository.saveRightChannel(right))
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnComplete(()->setRightChannel(right))
                 .subscribe();
         Completable.fromAction(()->sharedPrefRepository.saveLeftChannel(left))
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnComplete(()->setLeftChannel(left))
                 .subscribe();
-        setRightChannel(right);
-        setLeftChannel(left);
     }
 
     private void setSeekBarProgress(){
