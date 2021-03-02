@@ -20,11 +20,6 @@ public class VolumePresenter extends MvpPresenter<VolumeView> {
 
     public VolumePresenter(WaveRepository sharedPrefRepository) {
         this.sharedPrefRepository = sharedPrefRepository;
-        sharedPrefRepository.loadVolume()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess(volumeInteractor::setVolume)
-                .subscribe();
         disposable = volumeInteractor.getVolume().subscribe(this::setVolume);
     }
 
@@ -38,21 +33,20 @@ public class VolumePresenter extends MvpPresenter<VolumeView> {
         sharedPrefRepository.loadVolume()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess(this::setVolume)
-                .doOnSuccess(volume -> getViewState().setSeekBarVolumeProgress(volume))
+                .doOnSuccess(volumeInteractor::setVolume)
                 .subscribe();
     }
 
     public void seekBarVolumeProgressChanged(int volume) {
         Completable.fromAction(() -> sharedPrefRepository.saveVolume(volume))
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnComplete(() -> volumeInteractor.setVolume(volume))
                 .subscribe();
-        volumeInteractor.setVolume(volume);
-        System.out.println(volume);
-        setVolume(volume);
     }
 
     private void setVolume(int volume) {
+        getViewState().setSeekBarVolumeProgress(volume);
         getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
         getViewState().setTextViewVolumeValue(getStringValueOfVolume(volume));
     }

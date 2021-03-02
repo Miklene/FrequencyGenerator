@@ -119,7 +119,7 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
             binding.seekBarVolume.setMin(minSeekBarValue);
         }
         binding.seekBarVolume.setMax(maxSeekBarValue);
-        volumePresenter.initVolume();
+        //volumePresenter.initVolume();
         volumeDisposable = RxSeekBar.changeEvents(binding.seekBarVolume)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(seekBarChangeEvent -> {
