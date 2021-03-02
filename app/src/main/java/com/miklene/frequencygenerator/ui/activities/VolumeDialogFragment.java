@@ -21,6 +21,10 @@ import androidx.fragment.app.DialogFragment;
 import com.arellomobile.mvp.MvpAppCompatDialogFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.jakewharton.rxbinding4.widget.RxSeekBar;
+import com.jakewharton.rxbinding4.widget.SeekBarProgressChangeEvent;
+import com.jakewharton.rxbinding4.widget.SeekBarStartChangeEvent;
+import com.jakewharton.rxbinding4.widget.SeekBarStopChangeEvent;
 import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.mvp.presenters.BalancePresenter;
 import com.miklene.frequencygenerator.mvp.presenters.VolumePresenter;
@@ -38,6 +42,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.observers.DisposableObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
 public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements VolumeView,
@@ -76,19 +81,8 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
     private FragmentDialogVolumeBinding binding;
 
     private Observable<Long> volumeObservable;
-    private DisposableObserver<Long> volumeDisposable;
+    private Disposable volumeDisposable;
     private Disposable balanceDisposable;
-
-   /*@Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = binding.getRoot();
-        initSeekBarVolume();
-        initBalance();
-        return view;
-    }*/
-
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -106,14 +100,13 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-      //  setStyle(DialogFragment.STYLE_NO_TITLE, R.style.Theme_FrequencyGenerator);
     }
 
     @SuppressLint("InflateParams")
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),R.style.Theme_AppCompat_Light_Dialog);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.Theme_AppCompat_Light_Dialog);
         binding = FragmentDialogVolumeBinding.inflate(LayoutInflater.from(getContext()));
         builder.setView(binding.getRoot());
         return builder.create();
@@ -127,43 +120,16 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
         }
         binding.seekBarVolume.setMax(maxSeekBarValue);
         volumePresenter.initVolume();
-        binding.seekBarVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                volumeObservable = Observable.interval(50, TimeUnit.MILLISECONDS);
-                volumeDisposable = new DisposableObserver<Long>() {
-                    @Override
-                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull Long l) {
-                        volumePresenter
-                                .seekBarVolumeProgressChanged(binding.seekBarVolume.getProgress());
+        volumeDisposable = RxSeekBar.changeEvents(binding.seekBarVolume)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(seekBarChangeEvent -> {
+                    if (seekBarChangeEvent instanceof SeekBarProgressChangeEvent) {
+                        SeekBarProgressChangeEvent seekBarProgressChangeEvent = (SeekBarProgressChangeEvent) seekBarChangeEvent;
+                        volumePresenter.seekBarVolumeProgressChanged(seekBarProgressChangeEvent.getProgress());
                     }
-
-                    @Override
-                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                };
-                volumeObservable.observeOn(AndroidSchedulers.mainThread())
-                        .distinct()
-                        .subscribe(volumeDisposable);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if (volumeDisposable != null)
-                    volumeDisposable.dispose();
-            }
-        });
+                });
     }
+
 
     private void initBalance() {
         final int minSeekBarValue = 0;
@@ -173,28 +139,14 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
         }
         binding.seekBarBalance.setMax(maxSeekBarValue);
         balancePresenter.initBalance();
-        binding.seekBarBalance.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                balanceDisposable = Observable.interval(50, TimeUnit.MILLISECONDS)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnNext(l -> balancePresenter.
-                                seekBarBalanceProgressChanged(binding.seekBarBalance.getProgress()))
-                        .distinct()
-                        .subscribe();
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if (balanceDisposable != null)
-                    balanceDisposable.dispose();
-            }
-        });
+        balanceDisposable = RxSeekBar.changeEvents(binding.seekBarBalance)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(seekBarChangeEvent -> {
+                    if (seekBarChangeEvent instanceof SeekBarProgressChangeEvent) {
+                        SeekBarProgressChangeEvent seekBarProgressChangeEvent = (SeekBarProgressChangeEvent) seekBarChangeEvent;
+                        balancePresenter.seekBarBalanceProgressChanged(seekBarProgressChangeEvent.getProgress());
+                    }
+                });
     }
 
     @Override
@@ -235,6 +187,8 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        volumeDisposable.dispose();
+        balanceDisposable.dispose();
         binding = null;
     }
 }

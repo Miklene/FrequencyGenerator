@@ -20,6 +20,11 @@ public class VolumePresenter extends MvpPresenter<VolumeView> {
 
     public VolumePresenter(WaveRepository sharedPrefRepository) {
         this.sharedPrefRepository = sharedPrefRepository;
+        sharedPrefRepository.loadVolume()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSuccess(volumeInteractor::setVolume)
+                .subscribe();
         disposable = volumeInteractor.getVolume().subscribe(this::setVolume);
     }
 
@@ -34,15 +39,16 @@ public class VolumePresenter extends MvpPresenter<VolumeView> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess(this::setVolume)
-                .doOnSuccess(volume->getViewState().setSeekBarVolumeProgress(volume))
+                .doOnSuccess(volume -> getViewState().setSeekBarVolumeProgress(volume))
                 .subscribe();
     }
 
     public void seekBarVolumeProgressChanged(int volume) {
-        Completable.fromAction(()->sharedPrefRepository.saveVolume(volume))
-            .subscribeOn(Schedulers.io())
-            .subscribe();
+        Completable.fromAction(() -> sharedPrefRepository.saveVolume(volume))
+                .subscribeOn(Schedulers.io())
+                .subscribe();
         volumeInteractor.setVolume(volume);
+        System.out.println(volume);
         setVolume(volume);
     }
 
@@ -65,7 +71,7 @@ public class VolumePresenter extends MvpPresenter<VolumeView> {
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         disposable.dispose();
     }
 }
