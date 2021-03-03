@@ -118,10 +118,10 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
 
     @Override
     public void initBalanceViews() {
-        initBalance();
+        initSeekBarBalance();
     }
 
-    private void initBalance() {
+    private void initSeekBarBalance() {
         final int minSeekBarValue = 0;
         final int maxSeekBarValue = 200;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -141,8 +141,8 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
     }
 
     @Override
-    public void setTextViewVolumeValue(String volumeValue) {
-        binding.textViewVolumeValue.setText(volumeValue);
+    public void setTextViewVolumeText(String volume) {
+        binding.textViewVolumeValue.setText(volume);
     }
 
     @Override

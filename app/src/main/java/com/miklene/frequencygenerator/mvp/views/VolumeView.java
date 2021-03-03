@@ -6,6 +6,6 @@ public interface VolumeView extends MvpView {
 
     void initVolumeViews();
     void setImageButtonVolumeSrc(int drawableId);
-    void setTextViewVolumeValue(String volumeValue);
+    void setTextViewVolumeText(String volume);
     void setSeekBarVolumeProgress(int progress);
 }

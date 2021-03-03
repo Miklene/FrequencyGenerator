@@ -5,5 +5,6 @@ import com.arellomobile.mvp.MvpView;
 
 public interface FrequencyView extends MvpView {
 
-    void setFrequency(float frequency);
+    void setEditTextFrequencyText(String frequency);
+    void initFrequencyViews();
 }

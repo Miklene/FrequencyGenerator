@@ -37,7 +37,7 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
             frequency = Float.parseFloat(text);
             if (!text.equals(formatStringValue(frequency)))
                 if (lastFrequency == frequency) {
-                    setEditTextValue(frequency);
+                    //setEditTextValue(frequency);
                     return;
                 }
             if (lastFrequency == frequency) {
@@ -50,11 +50,11 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
         } catch (Exception e) {
             frequency = 1;
             getViewState().setSeekBarProgress(calculateSeekBarProgress(frequency));
-            setEditTextValue(frequency);
+            //setEditTextValue(frequency);
             lastFrequency = frequency;
         }
         getViewState().setSeekBarProgress(calculateSeekBarProgress(frequency));
-        setEditTextValue(frequency);
+        //setEditTextValue(frequency);
         lastFrequency = frequency;
     }
 
@@ -73,53 +73,26 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
         }
     }
 
-   /* public void seekBarVolumeProgressChanged(int progress) {
-        volume = progress;
-        getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
-        getViewState().setTextViewVolumeValue(getStringValueOfVolume(volume));
-    }
-
-    private int getVolumeSrc(int volumeValue) {
-        int resId = R.drawable.blue_rectangle;
-        if (volumeValue == 0)
-            resId = R.drawable.ic_baseline_volume_off_24;
-        if (volumeValue <= 50 && volumeValue > 0)
-            resId = R.drawable.ic_baseline_volume_down_24;
-        if (volumeValue > 50)
-            resId = R.drawable.ic_baseline_volume_up_24;
-        return resId;
-    }
-
-    private String getStringValueOfVolume(int volumeValue){
-        return volumeValue + "%";
-    }
-
-    public void initVolumeElements() {
-        getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
-        getViewState().setTextViewVolumeValue(getStringValueOfVolume(volume));
-        getViewState().setSeekBarVolumeProgress(volume);
-    }*/
-
-    public void seekBarProgressChanged(int progress) {
+    /*public void seekBarProgressChanged(int progress) {
         if (progress == 14425215)
             frequency = 22000.00f;
         else
             frequency = calculateFrequency(progress);
         setEditTextValue(frequency);
         //getViewState().setEditTextValue(String.valueOf(frequency));
-    }
+    }*/
 
-    private void setEditTextValue(float frequency) {
+ /*   private void setEditTextValue(float frequency) {
         getViewState().setEditTextValue(formatStringValue(frequency));
     }
-
-    private float calculateFrequency(int seekBarProgress) {
+*/
+   /* private float calculateFrequency(int seekBarProgress) {
         float value = (float) (Math.pow(2, (seekBarProgress / 1000000d)));
         double scale = Math.pow(10, 2);
         double result = Math.round(value * scale) / scale;
         return (float) result;
         //return (float) (Math.pow(2, (seekBarProgress / 1000000d)));
-    }
+    }*/
 
     private String formatStringValue(float value) {
         return String.format(Locale.getDefault(),"%.2f", value);
@@ -148,7 +121,7 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
                 frequency += step;
                 if (frequency > 22000)
                     frequency = 22000;
-                setEditTextValue(frequency);
+                //setEditTextValue(frequency);
                 getViewState().setSeekBarProgress(calculateSeekBarProgress(frequency));
             }
 
@@ -170,7 +143,7 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
                 frequency = 22000;
         }
         disposable.dispose();
-        setEditTextValue(frequency);
+        //setEditTextValue(frequency);
         getViewState().setSeekBarProgress(calculateSeekBarProgress(frequency));
     }
 
@@ -186,7 +159,7 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
                 frequency -= step;
                 if (frequency < 1)
                     frequency = 1;
-                setEditTextValue(frequency);
+               // setEditTextValue(frequency);
                 getViewState().setSeekBarProgress(calculateSeekBarProgress(frequency));
             }
 
@@ -208,7 +181,7 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
                 frequency = 1;
         }
         disposable.dispose();
-        setEditTextValue(frequency);
+        //setEditTextValue(frequency);
         getViewState().setSeekBarProgress(calculateSeekBarProgress(frequency));
     }
 

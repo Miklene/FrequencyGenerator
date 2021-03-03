@@ -48,7 +48,7 @@ public class VolumePresenter extends MvpPresenter<VolumeView> {
     private void setVolume(int volume) {
         getViewState().setSeekBarVolumeProgress(volume);
         getViewState().setImageButtonVolumeSrc(getVolumeSrc(volume));
-        getViewState().setTextViewVolumeValue(getStringValueOfVolume(volume));
+        getViewState().setTextViewVolumeText(getStringValueOfVolume(volume));
     }
 
     private int getVolumeSrc(int volume) {
