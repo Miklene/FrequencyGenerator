@@ -31,7 +31,7 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
     public SingleFrequencyPresenter() {
     }
 
-    public void onEditTextTextChanges(String text) {
+   /* public void onEditTextTextChanges(String text) {
         text = text.replace(',', '.');
         try {
             frequency = Float.parseFloat(text);
@@ -56,7 +56,7 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
         getViewState().setSeekBarProgress(calculateSeekBarProgress(frequency));
         //setEditTextValue(frequency);
         lastFrequency = frequency;
-    }
+    }*/
 
     public void onImageButtonPlayClicked() {
         Wave wave = new SineWave(200, 100);
@@ -94,9 +94,9 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
         //return (float) (Math.pow(2, (seekBarProgress / 1000000d)));
     }*/
 
-    private String formatStringValue(float value) {
+   /* private String formatStringValue(float value) {
         return String.format(Locale.getDefault(),"%.2f", value);
-    }
+    }*/
 
     private float formatFloatValue(float value) {
         double scale = Math.pow(10, 2);
@@ -109,7 +109,7 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
         return (int) ((Math.log(value) / Math.log(2)) * 1000000);
     }
 
-    public void onImageButtonIncreaseDown() {
+   /* public void onImageButtonIncreaseDown() {
         repeats = 0;
         Observable<Long> observable = onLongTouchObservable();
         disposable = new DisposableObserver<Long>() {
@@ -159,7 +159,7 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
                 frequency -= step;
                 if (frequency < 1)
                     frequency = 1;
-               // setEditTextValue(frequency);
+                // setEditTextValue(frequency);
                 getViewState().setSeekBarProgress(calculateSeekBarProgress(frequency));
             }
 
@@ -189,6 +189,6 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
         return Observable.interval(1000, 100, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread());
     }
-
+*/
 
 }

@@ -15,12 +15,12 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class VolumePresenter extends MvpPresenter<VolumeView> {
 
     private final WaveRepository sharedPrefRepository;
-    private final Disposable disposable;
+    private final Disposable volumeInteractorDisposable;
     private final VolumeInteractor volumeInteractor = VolumeInteractor.getInstance();
 
     public VolumePresenter(WaveRepository sharedPrefRepository) {
         this.sharedPrefRepository = sharedPrefRepository;
-        disposable = volumeInteractor.getVolume().subscribe(this::setVolume);
+        volumeInteractorDisposable = volumeInteractor.getVolume().subscribe(this::setVolume);
     }
 
     @Override
@@ -66,6 +66,6 @@ public class VolumePresenter extends MvpPresenter<VolumeView> {
 
     @Override
     public void onDestroy() {
-        disposable.dispose();
+        volumeInteractorDisposable.dispose();
     }
 }

@@ -18,9 +18,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,10 +35,8 @@ import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.mvp.presenters.FrequencyPresenter;
 import com.miklene.frequencygenerator.mvp.presenters.SingleFrequencyPresenter;
-import com.miklene.frequencygenerator.mvp.presenters.SharedPrefPresenter;
 import com.miklene.frequencygenerator.mvp.views.FrequencyView;
 import com.miklene.frequencygenerator.mvp.views.SingleFrequencyView;
-import com.miklene.frequencygenerator.mvp.views.SharedPrefView;
 import com.miklene.frequencygenerator.mvp.presenters.VolumePresenter;
 import com.miklene.frequencygenerator.mvp.views.VolumeView;
 import com.miklene.frequencygenerator.databinding.FragmentSingleFrequencyBinding;
@@ -51,11 +47,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.observers.DisposableObserver;
-
-import static android.widget.Toast.makeText;
 
 
 public class SingleFrequencyFragment extends MvpAppCompatFragment implements SingleFrequencyView,
@@ -69,7 +61,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     VolumePresenter volumePresenter;
 
     @ProvidePresenter
-    VolumePresenter provideVolumePresenter(){
+    VolumePresenter provideVolumePresenter() {
         preferences = Objects.requireNonNull(this.getActivity())
                 .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
         return new VolumePresenter(new PreferencesRepository(preferences));
@@ -89,7 +81,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     FrequencyPresenter frequencyPresenter;
 
     @ProvidePresenter
-    FrequencyPresenter provideFrequencyPresenter(){
+    FrequencyPresenter provideFrequencyPresenter() {
         preferences = Objects.requireNonNull(this.getActivity())
                 .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
         return new FrequencyPresenter(new PreferencesRepository(preferences));
@@ -104,19 +96,12 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
             R.drawable.ic_triangle,
             R.drawable.ic_square};
 
-    private long lastAction = 0L;
-    private DisposableObserver<Long> disposable;
-    private DisposableObserver<String> editTextDisposable;
     private Disposable seekBarFrequencyDisposable;
-    private Observable<Long> observable;
+    private Disposable editTextDisposable;
     private int cursorPosition;
 
     private static final String PREFS_FILE = "Wave";
-    private static final String PREFS_FREQUENCY = "Frequency";
-    private static final String PREFS_WAVE_TYPE = "WaveType";
-    private static final String PREFS_VOLUME = "Volume";
     private SharedPreferences preferences;
-    private SharedPreferences.Editor prefEditor;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -125,36 +110,12 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         View view = binding.getRoot();
         spinnerRowBinding = SpinnerRowBinding.inflate(getLayoutInflater());
         initSpinnerWaveType();
-        binding.imageButtonPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.startAnimation(new AlphaAnimation(1F, 0.8F));
-                singleFrequencyPresenter.onImageButtonPlayClicked();
-            }
+        binding.imageButtonPlay.setOnClickListener(v -> {
+            v.startAnimation(new AlphaAnimation(1F, 0.8F));
+            singleFrequencyPresenter.onImageButtonPlayClicked();
         });
         return view;
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        //Presenter
-       /* String type = binding.spinnerWaveType.getSelectedItem().toString().toUpperCase();
-        float frequency = Float.parseFloat(binding.editTextFrequency.getText().toString());
-        int volume = binding.seekBarVolume.getProgress();
-        sharedPrefPresenter.save(type, frequency, volume);*/
-        /*prefEditor = preferences.edit();
-        prefEditor.putFloat(PREFS_FREQUENCY, frequency);
-        prefEditor.putString(PREFS_WAVE_TYPE,type);
-        prefEditor.putInt(PREFS_VOLUME, volume);
-        prefEditor.apply();*/
-    }
-
- /*   @Override
-    public void setEditTextValue(String value) {
-        binding.editTextFrequency.setText(value);
-        setEditTextSelection();
-    }*/
 
     private void initSpinnerWaveType() {
         spinnerItems = Objects.requireNonNull(getActivity()).getResources().getStringArray(R.array.wave_type);
@@ -171,28 +132,8 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     }
 
 
-
-    @Override
-    public void disposeEditTextObservable() {
-        if (editTextDisposable != null) {
-            editTextDisposable.dispose();
-        }
-    }
-
-
-
-
-
-    private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
-    }
-
-
-
-    /**VolumeView
-     *
+    /**
+     * VolumeView
      */
     @Override
     public void initVolumeViews() {
@@ -205,15 +146,12 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     }
 
     private void initVolumeButton() {
-        binding.imageButtonVolume.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.startAnimation(new AlphaAnimation(1F, 0.8F));
+        binding.imageButtonVolume.setOnClickListener(v -> {
+            v.startAnimation(new AlphaAnimation(1F, 0.8F));
 
-                DialogFragment dialogFragment = new VolumeDialogFragment();
-                dialogFragment.show(Objects.requireNonNull(getActivity())
-                        .getSupportFragmentManager(), "TAG");
-            }
+            DialogFragment dialogFragment = new VolumeDialogFragment();
+            dialogFragment.show(Objects.requireNonNull(getActivity())
+                    .getSupportFragmentManager(), "TAG");
         });
     }
 
@@ -233,9 +171,8 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     }
 
 
-
-    /**FrequencyView
-     *
+    /**
+     * FrequencyView
      */
 
     @Override
@@ -253,7 +190,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             binding.seekBarFrequency.setMin(minSeekBarValue);
         }
-        seekBarFrequencyDisposable =  RxSeekBar.userChanges(binding.seekBarFrequency)
+        seekBarFrequencyDisposable = RxSeekBar.userChanges(binding.seekBarFrequency)
                 .skipInitialValue()
                 .debounce(5, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -261,83 +198,53 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     }
 
     private void initEditTextFrequency() {
-        binding.editTextFrequency.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cursorPosition = binding.editTextFrequency.getText().toString().length() -
-                        binding.editTextFrequency.getSelectionStart();
-            }
-        });
-        binding.editTextFrequency.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    subscribeEditTextObservable();
-                    hideKeyboard();
-                }
-                return false;
-            }
-        });
-    }
-
-    @Override
-    public void subscribeEditTextObservable() {
-        Observable<String> observable = RxTextView.textChanges(binding.editTextFrequency)
+        editTextDisposable = RxTextView.textChanges(binding.editTextFrequency)
+                .skipInitialValue()
                 .debounce(250, TimeUnit.MILLISECONDS)
                 .map(CharSequence::toString)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnDispose(() -> {
-                    Toast toast = makeText(getActivity(), "Disposed", Toast.LENGTH_LONG);
-                    toast.show();
+                .subscribe(s -> {
+                    cursorPosition = s.length() -
+                            binding.editTextFrequency.getSelectionStart();
+                    frequencyPresenter.onEditTextFrequencyTextChanges(s);
                 });
-        editTextDisposable = new DisposableObserver<String>() {
-            @Override
-            public void onNext(@io.reactivex.rxjava3.annotations.NonNull String s) {
+        binding.editTextFrequency.setOnClickListener(v ->
                 cursorPosition = binding.editTextFrequency.getText().toString().length() -
-                        binding.editTextFrequency.getSelectionStart();
-                singleFrequencyPresenter.onEditTextTextChanges(s);
-            }
+                        binding.editTextFrequency.getSelectionStart());
+        binding.editTextFrequency.setOnKeyListener((v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER)
+                hideKeyboard();
+            return false;
+        });
+    }
 
-            @Override
-            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        };
-        observable.subscribe(editTextDisposable);
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     private void initIncreaseButton() {
-        binding.imageButtonIncreaseFrequency.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
-                    singleFrequencyPresenter.onImageButtonIncreaseDown();
-                if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-                    binding.imageButtonIncreaseFrequency.performClick();
-                    singleFrequencyPresenter.onImageButtonIncreaseUp();
-                }
-                return true;
+        binding.imageButtonIncreaseFrequency.setOnTouchListener((v, event) -> {
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
+                frequencyPresenter.onImageButtonIncreaseDown();
+            if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                binding.imageButtonIncreaseFrequency.performClick();
+                frequencyPresenter.onImageButtonIncreaseUp();
             }
+            return true;
         });
     }
 
     private void initDecreaseButton() {
-        binding.imageButtonDecreaseFrequency.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
-                    singleFrequencyPresenter.onImageButtonDecreaseDown();
-                if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-                    binding.imageButtonDecreaseFrequency.performClick();
-                    singleFrequencyPresenter.onImageButtonDecreaseUp();
-                }
-                return true;
+        binding.imageButtonDecreaseFrequency.setOnTouchListener((v, event) -> {
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
+                frequencyPresenter.onImageButtonDecreaseDown();
+            if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                binding.imageButtonDecreaseFrequency.performClick();
+                frequencyPresenter.onImageButtonDecreaseUp();
             }
+            return true;
         });
     }
 
@@ -345,6 +252,11 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     public void setEditTextFrequencyText(String frequency) {
         binding.editTextFrequency.setText(frequency);
         setEditTextSelection();
+    }
+
+    @Override
+    public void setSeekBarFrequencyProgress(int progress) {
+        binding.seekBarFrequency.setProgress(progress);
     }
 
     private void setEditTextSelection() {
@@ -356,38 +268,27 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         Selection.setSelection(editable, temp);
     }
 
-    public void setSeekBarProgress(int progress) {
-        binding.seekBarFrequency.setProgress(progress);
-    }
-
-    private Observable<Integer> seekBarObservable() {
-        return RxSeekBar.changes(binding.seekBarFrequency)
-                .debounce(10, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread());
-        // .subscribe(integer -> {
-        //     mainPresenter.seekBarProgressChanged(integer);
-        // });
-    }
-
-    private int calculateSeekBarProgress(double value) {
-        return (int) ((Math.log(value) / Math.log(2)) * 1000000);
-    }
-
-
     @Override
     public void vibrate() {
-        Vibrator v = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE); // Vibrate for 400 milliseconds
+        Vibrator v = (Vibrator) Objects.requireNonNull(getActivity())
+                .getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            v.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
+            v.vibrate(VibrationEffect
+                    .createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
         else
             v.vibrate(50);
     }
+
+    /**
+     * Others
+     */
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
         seekBarFrequencyDisposable.dispose();
+        editTextDisposable.dispose();
     }
 
     public static SingleFrequencyFragment newInstance(int page) {
@@ -404,7 +305,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     }
 
 
-
     @Override
     public void confirmButtonClicked() {
 
@@ -415,20 +315,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
 
     }
 
- /*   @Override
-    public void setSeekBarFrequencyProgress(int progress) {
-        binding.seekBarFrequency.setProgress(progress);
-    }
-
-    @Override
-    public void setSpinnerWaveType() {
-
-    }
-
-    @Override
-    public void setTextViewVolumeValue(String value) {
-
-    }*/
 
     public class CustomImageButton extends AppCompatImageButton {
 
@@ -445,7 +331,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
             super.onTouchEvent(event);
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
-                    singleFrequencyPresenter.onImageButtonIncreaseDown();
+                    //frequencyPresenter.onImageButtonIncreaseDown();
                     break;
                 case MotionEvent.ACTION_UP:
                     performClick();
@@ -457,7 +343,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         @Override
         public boolean performClick() {
             super.performClick();
-            singleFrequencyPresenter.onImageButtonIncreaseUp();
+            // frequencyPresenter.onImageButtonIncreaseUp();
             return true;
         }
     }
