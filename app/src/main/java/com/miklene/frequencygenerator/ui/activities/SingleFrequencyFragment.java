@@ -30,17 +30,20 @@ import androidx.fragment.app.DialogFragment;
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.jakewharton.rxbinding4.widget.RxAdapterView;
 import com.jakewharton.rxbinding4.widget.RxSeekBar;
 import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.mvp.presenters.FrequencyPresenter;
 import com.miklene.frequencygenerator.mvp.presenters.SingleFrequencyPresenter;
+import com.miklene.frequencygenerator.mvp.presenters.WaveTypePresenter;
 import com.miklene.frequencygenerator.mvp.views.FrequencyView;
 import com.miklene.frequencygenerator.mvp.views.SingleFrequencyView;
 import com.miklene.frequencygenerator.mvp.presenters.VolumePresenter;
 import com.miklene.frequencygenerator.mvp.views.VolumeView;
 import com.miklene.frequencygenerator.databinding.FragmentSingleFrequencyBinding;
 import com.miklene.frequencygenerator.databinding.SpinnerRowBinding;
+import com.miklene.frequencygenerator.mvp.views.WaveTypeView;
 import com.miklene.frequencygenerator.repository.PreferencesRepository;
 
 import java.util.Objects;
@@ -51,7 +54,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 
 
 public class SingleFrequencyFragment extends MvpAppCompatFragment implements SingleFrequencyView,
-        VolumeDialogFragment.VolumeListener, /*SharedPrefView,*/ VolumeView, FrequencyView {
+        VolumeDialogFragment.VolumeListener, VolumeView, FrequencyView, WaveTypeView {
     public static final String ARG_PAGE = "ARG_PAGE";
 
     @InjectPresenter
@@ -67,16 +70,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         return new VolumePresenter(new PreferencesRepository(preferences));
     }
 
-   /* @InjectPresenter
-    SharedPrefPresenter sharedPrefPresenter;
-
-    @ProvidePresenter
-    SharedPrefPresenter provideSharedPrefRepository() {
-        preferences = Objects.requireNonNull(this.getActivity())
-                .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        return new SharedPrefPresenter(new PreferencesRepository(preferences));
-    }*/
-
     @InjectPresenter
     FrequencyPresenter frequencyPresenter;
 
@@ -85,6 +78,16 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         preferences = Objects.requireNonNull(this.getActivity())
                 .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
         return new FrequencyPresenter(new PreferencesRepository(preferences));
+    }
+
+    @InjectPresenter
+    WaveTypePresenter waveTypePresenter;
+
+    @ProvidePresenter
+    WaveTypePresenter provideWaveTypePresenter() {
+        preferences = Objects.requireNonNull(this.getActivity())
+                .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
+        return new WaveTypePresenter(new PreferencesRepository(preferences));
     }
 
     private FragmentSingleFrequencyBinding binding;
@@ -98,6 +101,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
 
     private Disposable seekBarFrequencyDisposable;
     private Disposable editTextDisposable;
+    private Disposable spinnerDisposable;
     private int cursorPosition;
 
     private static final String PREFS_FILE = "Wave";
@@ -109,28 +113,12 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         binding = FragmentSingleFrequencyBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         spinnerRowBinding = SpinnerRowBinding.inflate(getLayoutInflater());
-        initSpinnerWaveType();
         binding.imageButtonPlay.setOnClickListener(v -> {
             v.startAnimation(new AlphaAnimation(1F, 0.8F));
             singleFrequencyPresenter.onImageButtonPlayClicked();
         });
         return view;
     }
-
-    private void initSpinnerWaveType() {
-        spinnerItems = Objects.requireNonNull(getActivity()).getResources().getStringArray(R.array.wave_type);
-        MyCustomAdapter adapter = new MyCustomAdapter(this.getActivity(), R.layout.spinner_row, spinnerItems);
-        adapter.setDropDownViewResource(R.layout.spinner_row);
-        binding.spinnerWaveType.setAdapter(adapter);
-        //Presenter
-        /*String type = preferences.getString(PREFS_WAVE_TYPE, "SINE");
-        for(int i = 0;i<spinnerItems.length;i++)
-            if(spinnerItems[i].toUpperCase().equals(type)) {
-                binding.spinnerWaveType.setSelection(i);
-                break;
-            }*/
-    }
-
 
     /**
      * VolumeView
@@ -277,6 +265,31 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
                     .createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
         else
             v.vibrate(50);
+    }
+
+    /**
+     * WaveTypeView
+     */
+
+    @Override
+    public void initWaveTypeViews() {
+        initSpinnerWaveType();
+    }
+
+    private void initSpinnerWaveType() {
+        spinnerItems = Objects.requireNonNull(getActivity()).getResources().getStringArray(R.array.wave_type);
+        MyCustomAdapter adapter = new MyCustomAdapter(this.getActivity(), R.layout.spinner_row, spinnerItems);
+        adapter.setDropDownViewResource(R.layout.spinner_row);
+        binding.spinnerWaveType.setAdapter(adapter);
+        spinnerDisposable = RxAdapterView.itemSelections(binding.spinnerWaveType)
+                .skipInitialValue()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(integer -> waveTypePresenter.onSpinnerItemSelected(integer));
+    }
+
+    @Override
+    public void setSpinnerWaveTypeItem(int position) {
+        binding.spinnerWaveType.setSelection(position);
     }
 
     /**
