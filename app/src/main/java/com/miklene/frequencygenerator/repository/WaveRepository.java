@@ -9,9 +9,9 @@ public interface WaveRepository {
     void saveVolume(int volume);
     Single<Integer> loadVolume();
     void saveFrequency(float frequency);
-    float loadFrequency();
+    Single<Float> loadFrequency();
     void saveWaveType(String waveType);
-    String loadWaveType();
+    Single<String> loadWaveType();
     void saveRightChannel(int right);
     Single<Integer> loadRightChannel();
     void saveLeftChannel(int left);

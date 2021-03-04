@@ -31,7 +31,8 @@ public class PreferencesRepository implements WaveRepository{
 
     @Override
     public Single<Integer> loadVolume() {
-        return Single.create(subscriber -> subscriber.onSuccess(preferences.getInt(PREFS_VOLUME,100)));
+        return Single.create(subscriber -> subscriber
+                .onSuccess(preferences.getInt(PREFS_VOLUME,100)));
     }
 
     @Override
@@ -40,8 +41,9 @@ public class PreferencesRepository implements WaveRepository{
     }
 
     @Override
-    public float loadFrequency() {
-        return preferences.getFloat(PREFS_FREQUENCY, 200);
+    public Single<Float> loadFrequency() {
+        return Single.create(subscriber -> subscriber
+                .onSuccess(preferences.getFloat(PREFS_FREQUENCY, 200)));
     }
 
     @Override
@@ -50,8 +52,9 @@ public class PreferencesRepository implements WaveRepository{
     }
 
     @Override
-    public String loadWaveType() {
-        return preferences.getString(PREFS_WAVE_TYPE,WaveType.SINE.toString());
+    public  Single<String> loadWaveType() {
+        return Single.create(subscriber -> subscriber
+                .onSuccess(preferences.getString(PREFS_WAVE_TYPE,WaveType.SINE.toString())));
     }
 
     @Override
@@ -72,7 +75,6 @@ public class PreferencesRepository implements WaveRepository{
 
     @Override
     public Single<Integer> loadLeftChannel() {
-        int left = preferences.getInt(PREFS_LEFT_CHANNEL,100);
         return Single.create(subscriber ->
                 subscriber.onSuccess(preferences.getInt(PREFS_LEFT_CHANNEL,100)));
     }

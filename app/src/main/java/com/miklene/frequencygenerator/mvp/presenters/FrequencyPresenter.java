@@ -35,9 +35,14 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     }
 
     private void setFrequency() {
-        float frequency = sharedPrefRepository.loadFrequency();
-        setSeekBarFrequency(frequency);
-        setEditTextFrequency(frequency);
+        sharedPrefRepository.loadFrequency()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSuccess(frequency -> {
+                    setSeekBarFrequency(frequency);
+                    setEditTextFrequency(frequency);
+                })
+                .subscribe();
     }
 
     private void setSeekBarFrequency(float frequency) {

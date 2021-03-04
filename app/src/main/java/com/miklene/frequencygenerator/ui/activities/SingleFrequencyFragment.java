@@ -30,14 +30,17 @@ import androidx.fragment.app.DialogFragment;
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.jakewharton.rxbinding4.view.RxView;
 import com.jakewharton.rxbinding4.widget.RxAdapterView;
 import com.jakewharton.rxbinding4.widget.RxSeekBar;
 import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.mvp.presenters.FrequencyPresenter;
+import com.miklene.frequencygenerator.mvp.presenters.PlaybackPresenter;
 import com.miklene.frequencygenerator.mvp.presenters.SingleFrequencyPresenter;
 import com.miklene.frequencygenerator.mvp.presenters.WaveTypePresenter;
 import com.miklene.frequencygenerator.mvp.views.FrequencyView;
+import com.miklene.frequencygenerator.mvp.views.PlaybackView;
 import com.miklene.frequencygenerator.mvp.views.SingleFrequencyView;
 import com.miklene.frequencygenerator.mvp.presenters.VolumePresenter;
 import com.miklene.frequencygenerator.mvp.views.VolumeView;
@@ -51,14 +54,16 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Consumer;
+import kotlin.Unit;
 
 
-public class SingleFrequencyFragment extends MvpAppCompatFragment implements SingleFrequencyView,
+public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView,
         VolumeDialogFragment.VolumeListener, VolumeView, FrequencyView, WaveTypeView {
     public static final String ARG_PAGE = "ARG_PAGE";
 
     @InjectPresenter
-    SingleFrequencyPresenter singleFrequencyPresenter;
+    PlaybackPresenter playbackPresenter;
 
     @InjectPresenter()
     VolumePresenter volumePresenter;
@@ -93,7 +98,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     private FragmentSingleFrequencyBinding binding;
     private SpinnerRowBinding spinnerRowBinding;
     String[] spinnerItems;
-    int[] images = new int[]{
+    final int[] images = new int[]{
             R.drawable.ic_sine,
             R.drawable.ic_sawtooth,
             R.drawable.ic_triangle,
@@ -102,6 +107,8 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     private Disposable seekBarFrequencyDisposable;
     private Disposable editTextDisposable;
     private Disposable spinnerDisposable;
+    private Disposable imageButtonPlayDisposable;
+
     private int cursorPosition;
 
     private static final String PREFS_FILE = "Wave";
@@ -113,10 +120,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         binding = FragmentSingleFrequencyBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         spinnerRowBinding = SpinnerRowBinding.inflate(getLayoutInflater());
-        binding.imageButtonPlay.setOnClickListener(v -> {
-            v.startAnimation(new AlphaAnimation(1F, 0.8F));
-            singleFrequencyPresenter.onImageButtonPlayClicked();
-        });
         return view;
     }
 
@@ -214,8 +217,10 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
 
     private void initIncreaseButton() {
         binding.imageButtonIncreaseFrequency.setOnTouchListener((v, event) -> {
-            if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
                 frequencyPresenter.onImageButtonIncreaseDown();
+            }
             if (event.getActionMasked() == MotionEvent.ACTION_UP) {
                 binding.imageButtonIncreaseFrequency.performClick();
                 frequencyPresenter.onImageButtonIncreaseUp();
@@ -226,8 +231,10 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
 
     private void initDecreaseButton() {
         binding.imageButtonDecreaseFrequency.setOnTouchListener((v, event) -> {
-            if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                binding.imageButtonDecreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
                 frequencyPresenter.onImageButtonDecreaseDown();
+            }
             if (event.getActionMasked() == MotionEvent.ACTION_UP) {
                 binding.imageButtonDecreaseFrequency.performClick();
                 frequencyPresenter.onImageButtonDecreaseUp();
@@ -293,6 +300,29 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
     }
 
     /**
+     * PlaybackView
+     */
+
+    @Override
+    public void initPlaybackViews() {
+        initImageButtonPlay();
+    }
+
+    private void initImageButtonPlay(){
+        imageButtonPlayDisposable = RxView.clicks(binding.imageButtonPlay)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(unit -> {
+                    binding.imageButtonPlay.startAnimation(new AlphaAnimation(1F, 0.8F));
+                    playbackPresenter.onImageButtonPlayClicked();
+                });
+    }
+
+    @Override
+    public void setImageButtonPlayBackground(int drawableId) {
+        binding.imageButtonPlay.setImageResource(drawableId);
+    }
+
+    /**
      * Others
      */
 
@@ -302,6 +332,8 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         binding = null;
         seekBarFrequencyDisposable.dispose();
         editTextDisposable.dispose();
+        spinnerDisposable.dispose();
+        imageButtonPlayDisposable.dispose();
     }
 
     public static SingleFrequencyFragment newInstance(int page) {
@@ -311,12 +343,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Sin
         fragment.setArguments(args);
         return fragment;
     }
-
-    @Override
-    public void setImageButtonPlayBackground(int drawableId) {
-        binding.imageButtonPlay.setImageResource(drawableId);
-    }
-
 
     @Override
     public void confirmButtonClicked() {
