@@ -28,11 +28,18 @@ public abstract class Wave implements RecordParameters {
         double period = 1d / frequency;
         phase = phase + durationPerSampleRate / period;
         phase -= (int) phase;
-        Log.d("TAG", String.valueOf(durationPerSampleRate));
+    }
+
+    public void setFrequency(float frequency) {
+        this.frequency = frequency;
     }
 
     public float getFrequency() {
         return frequency;
+    }
+
+    public void setAmplitude(double amplitude) {
+        this.amplitude = amplitude;
     }
 
     public double getAmplitude() {

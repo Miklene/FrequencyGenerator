@@ -48,6 +48,7 @@ import com.miklene.frequencygenerator.databinding.FragmentSingleFrequencyBinding
 import com.miklene.frequencygenerator.databinding.SpinnerRowBinding;
 import com.miklene.frequencygenerator.mvp.views.WaveTypeView;
 import com.miklene.frequencygenerator.repository.PreferencesRepository;
+import com.miklene.frequencygenerator.repository.WaveRepository;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -61,18 +62,22 @@ import kotlin.Unit;
 public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView,
         VolumeDialogFragment.VolumeListener, VolumeView, FrequencyView, WaveTypeView {
     public static final String ARG_PAGE = "ARG_PAGE";
-
+    private SharedPreferences preferences;
+    private  WaveRepository repository;
     @InjectPresenter
     PlaybackPresenter playbackPresenter;
+
+    @ProvidePresenter
+    PlaybackPresenter providePlaybackPresenter() {
+        return new PlaybackPresenter(getRepository());
+    }
 
     @InjectPresenter()
     VolumePresenter volumePresenter;
 
     @ProvidePresenter
     VolumePresenter provideVolumePresenter() {
-        preferences = Objects.requireNonNull(this.getActivity())
-                .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        return new VolumePresenter(new PreferencesRepository(preferences));
+        return new VolumePresenter(getRepository());
     }
 
     @InjectPresenter
@@ -80,9 +85,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     @ProvidePresenter
     FrequencyPresenter provideFrequencyPresenter() {
-        preferences = Objects.requireNonNull(this.getActivity())
-                .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        return new FrequencyPresenter(new PreferencesRepository(preferences));
+        return new FrequencyPresenter(getRepository());
     }
 
     @InjectPresenter
@@ -90,9 +93,16 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     @ProvidePresenter
     WaveTypePresenter provideWaveTypePresenter() {
-        preferences = Objects.requireNonNull(this.getActivity())
-                .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        return new WaveTypePresenter(new PreferencesRepository(preferences));
+        return new WaveTypePresenter(getRepository());
+    }
+
+    private WaveRepository getRepository(){
+        if (preferences == null){
+            preferences = Objects.requireNonNull(this.getActivity())
+                    .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
+            repository = new PreferencesRepository(preferences);
+        }
+        return repository;
     }
 
     private FragmentSingleFrequencyBinding binding;
@@ -112,7 +122,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     private int cursorPosition;
 
     private static final String PREFS_FILE = "Wave";
-    private SharedPreferences preferences;
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -308,7 +318,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         initImageButtonPlay();
     }
 
-    private void initImageButtonPlay(){
+    private void initImageButtonPlay() {
         imageButtonPlayDisposable = RxView.clicks(binding.imageButtonPlay)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(unit -> {

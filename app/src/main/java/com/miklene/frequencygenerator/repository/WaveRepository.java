@@ -3,8 +3,13 @@ package com.miklene.frequencygenerator.repository;
 import com.miklene.frequencygenerator.wave.Wave;
 
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.Subject;
 
 public interface WaveRepository {
+
+    Subject<Float> getFrequencySubject();
+    Subject<Integer> getVolumeSubject();
 
     void saveVolume(int volume);
     Single<Integer> loadVolume();
