@@ -35,8 +35,7 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     }
 
     private void setFrequency() {
-        sharedPrefRepository.loadFrequency()
-                .subscribeOn(Schedulers.io())
+        sharedPrefRepository.loadFrequency().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess(frequency -> {
                     setSeekBarFrequency(frequency);
@@ -81,7 +80,7 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     }
 
     public void onEditTextFrequencyTextChanges(String text) {
-        //text = text.replace(',', '.');
+        text = text.replace(',', '.');  //НК
         try {
             frequency = Float.parseFloat(text);
         } catch (Exception e) {

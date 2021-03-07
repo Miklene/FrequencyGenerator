@@ -14,12 +14,16 @@ public abstract class Wave implements RecordParameters {
 
     long id = 0;
     float frequency;
-    double amplitude;
+    double volume;
+    double left;
+    double right;
     double phase;
 
-    public Wave(float frequency, double amplitude) {
+    public Wave(float frequency, double volume, double left, double right) {
         this.frequency = frequency;
-        this.amplitude = amplitude;
+        this.volume = volume;
+        this.left = left;
+        this.right = right;
     }
 
     public abstract float[] createBuffer();
@@ -38,12 +42,28 @@ public abstract class Wave implements RecordParameters {
         return frequency;
     }
 
-    public void setAmplitude(double amplitude) {
-        this.amplitude = amplitude;
+    public void setVolume(double volume) {
+        this.volume = volume;
     }
 
-    public double getAmplitude() {
-        return amplitude;
+    public double getVolume() {
+        return volume;
+    }
+
+    public double getLeft() {
+        return left;
+    }
+
+    public void setLeft(double left) {
+        this.left = left;
+    }
+
+    public double getRight() {
+        return right;
+    }
+
+    public void setRight(double right) {
+        this.right = right;
     }
 
     public double getPhase() {

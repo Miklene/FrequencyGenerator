@@ -59,7 +59,7 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
     }*/
 
     public void onImageButtonPlayClicked() {
-        Wave wave = new SineWave(200, 100);
+       /* Wave wave = new SineWave(200, 100);
         PlayerState state = wavePlayer.getState();
         if (state.equals(PlayerState.OFF)) {
             getViewState().setImageButtonPlayBackground(R.drawable.ic_baseline_stop_circle_24);
@@ -70,7 +70,7 @@ public class SingleFrequencyPresenter extends MvpPresenter<SingleFrequencyView> 
                 state.equals(PlayerState.START)) {
             wavePlayer.stop();
             getViewState().setImageButtonPlayBackground(R.drawable.ic_baseline_play_circle_filled_24);
-        }
+        }*/
     }
 
     /*public void seekBarProgressChanged(int progress) {

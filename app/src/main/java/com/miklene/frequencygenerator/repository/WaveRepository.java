@@ -10,6 +10,9 @@ public interface WaveRepository {
 
     Subject<Float> getFrequencySubject();
     Subject<Integer> getVolumeSubject();
+    Subject<Integer> getRightChannelSubject();
+    Subject<Integer> getLeftChannelSubject();
+    Subject<String> getWaveTypeSubject();
 
     void saveVolume(int volume);
     Single<Integer> loadVolume();

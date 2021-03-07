@@ -25,11 +25,11 @@ public class SharedPrefPresenter extends MvpPresenter<SharedPrefView> {
         getViewState().setEditTextValue(String.
                 format(Locale.getDefault(),"%.2f", wave.getFrequency()));
         getViewState().setSeekBarFrequencyProgress(FrequencyParser.parseToInt(wave.getFrequency()));
-        getViewState().setTextViewVolumeValue(wave.getAmplitude() + "%");
+        getViewState().setTextViewVolumeValue(wave.getVolume() + "%");
     }
 
-    public void save(String type, float frequency, int volume){
+    /*public void save(String type, float frequency, int volume, ){
         sharedPrefRepository.saveAll(new SimpleWaveFactory()
-                .createWave(WaveType.valueOf(type.toUpperCase()),frequency,volume));
-    }
+                .createWave(WaveType.valueOf(type.toUpperCase()),frequency,volume, ));
+    }*/
 }

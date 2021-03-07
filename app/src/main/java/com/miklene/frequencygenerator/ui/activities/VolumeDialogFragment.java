@@ -18,11 +18,14 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.jakewharton.rxbinding4.widget.RxSeekBar;
 import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.mvp.presenters.BalancePresenter;
+import com.miklene.frequencygenerator.mvp.presenters.PlaybackPresenter;
 import com.miklene.frequencygenerator.mvp.presenters.VolumePresenter;
 import com.miklene.frequencygenerator.mvp.views.BalanceView;
+import com.miklene.frequencygenerator.mvp.views.PlaybackView;
 import com.miklene.frequencygenerator.mvp.views.VolumeView;
 import com.miklene.frequencygenerator.databinding.FragmentDialogVolumeBinding;
 import com.miklene.frequencygenerator.repository.PreferencesRepository;
+import com.miklene.frequencygenerator.repository.WaveRepository;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -33,18 +36,35 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements VolumeView,
-        BalanceView {
+        BalanceView, PlaybackView {
 
     private static final String PREFS_FILE = "Wave";
+    private SharedPreferences preferences;
+    private  WaveRepository repository;
 
     @InjectPresenter
     VolumePresenter volumePresenter;
 
     @ProvidePresenter
     VolumePresenter provideVolumePresenter() {
-        SharedPreferences preferences = Objects.requireNonNull(this.getActivity())
-                .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        return new VolumePresenter(new PreferencesRepository(preferences));
+        return new VolumePresenter(getRepository());
+    }
+
+    @InjectPresenter
+    PlaybackPresenter playbackPresenter;
+
+    @ProvidePresenter
+    PlaybackPresenter providePlaybackPresenter() {
+        return new PlaybackPresenter(getRepository());
+    }
+
+    private WaveRepository getRepository(){
+        if (preferences == null){
+            preferences = Objects.requireNonNull(this.getActivity())
+                    .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
+            repository = new PreferencesRepository(preferences);
+        }
+        return repository;
     }
 
     @InjectPresenter
@@ -55,6 +75,16 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
         SharedPreferences preferences = Objects.requireNonNull(this.getActivity())
                 .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
         return new BalancePresenter(new PreferencesRepository(preferences));
+    }
+
+    @Override
+    public void initPlaybackViews() {
+
+    }
+
+    @Override
+    public void setImageButtonPlayBackground(int drawableId) {
+
     }
 
     public interface VolumeListener {

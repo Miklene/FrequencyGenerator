@@ -23,6 +23,13 @@ public class PreferencesRepository implements WaveRepository {
 
     private Subject<Float> frequencySubject;
     private Subject<Integer> volumeSubject;
+    private Subject<Integer> rightChannelSubject;
+    private Subject<Integer> leftChannelSubject;
+    private Subject<String> waveTypeSubject;
+
+    public PreferencesRepository(SharedPreferences preferences) {
+        this.preferences = preferences;
+    }
 
     @Override
     public Subject<Float> getFrequencySubject() {
@@ -38,11 +45,26 @@ public class PreferencesRepository implements WaveRepository {
         return volumeSubject;
     }
 
-
-    public PreferencesRepository(SharedPreferences preferences) {
-        this.preferences = preferences;
+    @Override
+    public Subject<Integer> getRightChannelSubject() {
+        rightChannelSubject = BehaviorSubject
+                .createDefault(preferences.getInt(PREFS_RIGHT_CHANNEL, 100));
+        return rightChannelSubject;
     }
 
+    @Override
+    public Subject<Integer> getLeftChannelSubject() {
+        leftChannelSubject = BehaviorSubject
+                .createDefault(preferences.getInt(PREFS_LEFT_CHANNEL, 100));
+        return leftChannelSubject;
+    }
+
+    @Override
+    public Subject<String> getWaveTypeSubject() {
+        waveTypeSubject = BehaviorSubject
+                .createDefault(preferences.getString(PREFS_WAVE_TYPE, WaveType.SINE.toString() ));
+        return waveTypeSubject;
+    }
 
     @Override
     public void saveVolume(int volume) {
@@ -59,9 +81,9 @@ public class PreferencesRepository implements WaveRepository {
 
     @Override
     public void saveFrequency(float frequency) {
+        getEditor().putFloat(PREFS_FREQUENCY, frequency).apply();
         if (frequencySubject != null)
             frequencySubject.onNext(frequency);
-        getEditor().putFloat(PREFS_FREQUENCY, frequency).apply();
     }
 
     @Override
@@ -73,6 +95,8 @@ public class PreferencesRepository implements WaveRepository {
     @Override
     public void saveWaveType(String waveType) {
         getEditor().putString(PREFS_WAVE_TYPE, waveType).apply();
+        if (waveTypeSubject != null)
+            waveTypeSubject.onNext(waveType);
     }
 
     @Override
@@ -84,6 +108,8 @@ public class PreferencesRepository implements WaveRepository {
     @Override
     public void saveRightChannel(int right) {
         getEditor().putInt(PREFS_RIGHT_CHANNEL, right).apply();
+        if (rightChannelSubject != null)
+            rightChannelSubject.onNext(right);
     }
 
     @Override
@@ -95,6 +121,8 @@ public class PreferencesRepository implements WaveRepository {
     @Override
     public void saveLeftChannel(int left) {
         getEditor().putInt(PREFS_LEFT_CHANNEL, left).apply();
+        if (leftChannelSubject != null)
+            leftChannelSubject.onNext(left);
     }
 
     @Override
@@ -108,17 +136,18 @@ public class PreferencesRepository implements WaveRepository {
         SharedPreferences.Editor prefEditor;
         prefEditor = preferences.edit();
         prefEditor.putFloat(PREFS_FREQUENCY, wave.getFrequency());
-        prefEditor.putInt(PREFS_VOLUME, (int) (wave.getAmplitude() * 100));
+        prefEditor.putInt(PREFS_VOLUME, (int) (wave.getVolume() * 100));
         prefEditor.putString(PREFS_WAVE_TYPE, wave.toString().toUpperCase());
         prefEditor.apply();
     }
 
     @Override
     public Wave loadAll() {
-        float frequency = preferences.getFloat(PREFS_FREQUENCY, 200);
+      /*  float frequency = preferences.getFloat(PREFS_FREQUENCY, 200);
         String type = preferences.getString(PREFS_WAVE_TYPE, WaveType.SINE.toString());
         int amplitude = preferences.getInt(PREFS_VOLUME, 100);
-        return new SimpleWaveFactory().createWave(WaveType.valueOf(type), frequency, amplitude);
+        return new SimpleWaveFactory().createWave(WaveType.valueOf(type), frequency, amplitude);*/
+        return null;
     }
 
     private SharedPreferences.Editor getEditor() {
