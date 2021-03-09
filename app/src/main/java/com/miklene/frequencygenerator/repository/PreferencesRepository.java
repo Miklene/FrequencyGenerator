@@ -2,6 +2,7 @@ package com.miklene.frequencygenerator.repository;
 
 import android.content.SharedPreferences;
 
+import com.miklene.frequencygenerator.player.WavePlayer;
 import com.miklene.frequencygenerator.wave.SimpleWaveFactory;
 import com.miklene.frequencygenerator.wave.Wave;
 import com.miklene.frequencygenerator.wave.WaveType;
@@ -13,7 +14,8 @@ import io.reactivex.rxjava3.subjects.Subject;
 
 public class PreferencesRepository implements WaveRepository {
 
-    private final SharedPreferences preferences;
+    private SharedPreferences preferences;
+    private static PreferencesRepository repository;
 
     private static final String PREFS_FREQUENCY = "Frequency";
     private static final String PREFS_VOLUME = "Volume";
@@ -27,7 +29,21 @@ public class PreferencesRepository implements WaveRepository {
     private Subject<Integer> leftChannelSubject;
     private Subject<String> waveTypeSubject;
 
-    public PreferencesRepository(SharedPreferences preferences) {
+    /*public PreferencesRepository(SharedPreferences preferences) {
+        this.preferences = preferences;
+    }*/
+
+    public static PreferencesRepository getInstance(){
+        if (repository == null)
+            repository = new PreferencesRepository();
+        return repository;
+    }
+
+    private PreferencesRepository() {
+    }
+
+    @Override
+    public void setSharedPreferences(SharedPreferences preferences){
         this.preferences = preferences;
     }
 

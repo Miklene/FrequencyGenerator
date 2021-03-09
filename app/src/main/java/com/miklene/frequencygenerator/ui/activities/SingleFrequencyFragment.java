@@ -100,7 +100,8 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         if (preferences == null){
             preferences = Objects.requireNonNull(this.getActivity())
                     .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-            repository = new PreferencesRepository(preferences);
+            repository = PreferencesRepository.getInstance();
+            repository.setSharedPreferences(preferences);
         }
         return repository;
     }

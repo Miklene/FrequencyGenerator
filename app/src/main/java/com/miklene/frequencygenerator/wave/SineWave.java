@@ -1,5 +1,7 @@
 package com.miklene.frequencygenerator.wave;
 
+import org.jetbrains.annotations.NotNull;
+
 public class SineWave extends Wave {
 
 
@@ -9,6 +11,9 @@ public class SineWave extends Wave {
 
     @Override
     public float[] createBuffer() {
+        /*double volume = getVolume();
+        double left = getLeft();
+        double right = getRight();*/
         float[] buffer = new float[duration];
         for (int i = 0; i < buffer.length; i++) {
             buffer[i] = (float) (Math.sin(twoPI *
@@ -39,6 +44,7 @@ public class SineWave extends Wave {
         return max;
     }
 
+    @NotNull
     @Override
     public String toString() {
         return "Sine";

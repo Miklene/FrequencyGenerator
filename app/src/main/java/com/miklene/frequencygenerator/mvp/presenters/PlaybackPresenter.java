@@ -79,5 +79,10 @@ public class PlaybackPresenter extends MvpPresenter<PlaybackView> {
     private void changeWaveType(String waveType) {
         wave = SimpleWaveFactory.createWave(WaveType.valueOf(waveType), wave.getFrequency(),
                 wave.getVolume(), wave.getLeft(), wave.getRight());
+        if(wavePlayer.isPlayed()) {
+            wavePlayer.stop();
+            while(wavePlayer.isPlayed());
+                wavePlayer.play(wave);
+        }
     }
 }

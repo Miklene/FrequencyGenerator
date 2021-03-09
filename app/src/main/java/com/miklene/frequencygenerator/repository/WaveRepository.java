@@ -1,5 +1,7 @@
 package com.miklene.frequencygenerator.repository;
 
+import android.content.SharedPreferences;
+
 import com.miklene.frequencygenerator.wave.Wave;
 
 import io.reactivex.rxjava3.core.Single;
@@ -13,6 +15,8 @@ public interface WaveRepository {
     Subject<Integer> getRightChannelSubject();
     Subject<Integer> getLeftChannelSubject();
     Subject<String> getWaveTypeSubject();
+
+    void setSharedPreferences(SharedPreferences preferences);
 
     void saveVolume(int volume);
     Single<Integer> loadVolume();

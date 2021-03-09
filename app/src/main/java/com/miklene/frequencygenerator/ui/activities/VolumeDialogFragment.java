@@ -58,23 +58,19 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
         return new PlaybackPresenter(getRepository());
     }
 
-    private WaveRepository getRepository(){
-        if (preferences == null){
-            preferences = Objects.requireNonNull(this.getActivity())
-                    .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-            repository = new PreferencesRepository(preferences);
-        }
-        return repository;
-    }
-
     @InjectPresenter
     BalancePresenter balancePresenter;
 
     @ProvidePresenter
     BalancePresenter provideBalancePresenter() {
-        SharedPreferences preferences = Objects.requireNonNull(this.getActivity())
-                .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        return new BalancePresenter(new PreferencesRepository(preferences));
+        return new BalancePresenter(getRepository());
+    }
+
+    private WaveRepository getRepository(){
+        if (preferences == null){
+            repository = PreferencesRepository.getInstance();
+        }
+        return repository;
     }
 
     @Override

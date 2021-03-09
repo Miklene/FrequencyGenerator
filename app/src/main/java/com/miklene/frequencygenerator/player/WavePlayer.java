@@ -53,7 +53,7 @@ public class WavePlayer implements RecordParameters {
     }
 
     public void stop() {
-        play = false;
+
         //stopWavePlayer();
         //executor.shutdown();
         audioPlayer.setState(PlayerState.END);
@@ -156,6 +156,7 @@ public class WavePlayer implements RecordParameters {
                 audioTrack.release();
                 state = PlayerState.OFF;
                 wave = null;
+                play = false;
             }
         }
 
