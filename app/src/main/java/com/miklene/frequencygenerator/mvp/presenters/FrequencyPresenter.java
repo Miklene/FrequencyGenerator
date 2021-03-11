@@ -115,6 +115,8 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
 
     public void onImageButtonIncreaseDown() {
         repeats = 0;
+        if (buttonDisposable != null)
+            buttonDisposable.dispose();
         buttonDisposable = onLongTouchObservable()
                 .doOnNext(l -> {
                     if (repeats == 0)
@@ -147,6 +149,8 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
 
     public void onImageButtonDecreaseDown() {
         repeats = 0;
+        if (buttonDisposable != null)
+            buttonDisposable.dispose();
         buttonDisposable = onLongTouchObservable()
                 .doOnNext(l -> {
                     if (repeats == 0)
@@ -185,6 +189,7 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        buttonDisposable.dispose();
+        if (buttonDisposable != null)
+            buttonDisposable.dispose();
     }
 }

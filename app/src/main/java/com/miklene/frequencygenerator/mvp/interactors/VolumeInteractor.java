@@ -1,6 +1,5 @@
-package com.miklene.frequencygenerator.mvp.presenters;
+package com.miklene.frequencygenerator.mvp.interactors;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.Subject;
 

@@ -3,6 +3,7 @@ package com.miklene.frequencygenerator.mvp.presenters;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.miklene.frequencygenerator.R;
+import com.miklene.frequencygenerator.mvp.interactors.VolumeInteractor;
 import com.miklene.frequencygenerator.mvp.views.VolumeView;
 import com.miklene.frequencygenerator.repository.WaveRepository;
 

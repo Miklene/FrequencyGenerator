@@ -67,9 +67,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
-        android:theme="@style/SeekBarBalanceStyle"
         android:progressBackgroundTint="@android:color/darker_gray"
         android:progressTint="@android:color/transparent"
+        android:theme="@style/SeekBarBalanceStyle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewBalance" />
 
@@ -108,4 +108,15 @@
         app:layout_constraintLeft_toLeftOf="@id/textViewRightChannel"
         app:layout_constraintRight_toRightOf="@id/textViewRightChannel"
         app:layout_constraintTop_toBottomOf="@+id/textViewRightChannel" />
+
+    <ImageButton
+        android:id="@+id/imageButtonBalanceCenter"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_margin="5dp"
+        android:background="@drawable/blue_ring"
+        android:src="@drawable/ic_baseline_settings_backup_restore_24"
+        app:layout_constraintLeft_toLeftOf="@id/seekBarBalance"
+        app:layout_constraintRight_toRightOf="@id/seekBarBalance"
+        app:layout_constraintTop_toBottomOf="@id/seekBarBalance" />
 </androidx.constraintlayout.widget.ConstraintLayout>

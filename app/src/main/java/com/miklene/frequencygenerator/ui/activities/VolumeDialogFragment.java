@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.arellomobile.mvp.MvpAppCompatDialogFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.jakewharton.rxbinding4.view.RxView;
 import com.jakewharton.rxbinding4.widget.RxSeekBar;
 import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.mvp.presenters.BalancePresenter;
@@ -34,13 +36,14 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements VolumeView,
         BalanceView, PlaybackView {
 
     private static final String PREFS_FILE = "Wave";
     private SharedPreferences preferences;
-    private  WaveRepository repository;
+    private WaveRepository repository;
 
     @InjectPresenter
     VolumePresenter volumePresenter;
@@ -66,8 +69,8 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
         return new BalancePresenter(getRepository());
     }
 
-    private WaveRepository getRepository(){
-        if (preferences == null){
+    private WaveRepository getRepository() {
+        if (preferences == null) {
             repository = PreferencesRepository.getInstance();
         }
         return repository;
@@ -85,6 +88,7 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
 
     public interface VolumeListener {
         void confirmButtonClicked();
+
         void cancelButtonClicked();
     }
 
@@ -94,6 +98,7 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
 
     private Disposable volumeDisposable;
     private Disposable balanceDisposable;
+    private Disposable balanceCenterDisposable;
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -126,6 +131,7 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
     @Override
     public void initVolumeViews() {
         initSeekBarVolume();
+        initImageButtonBalanceCenter();
     }
 
     private void initSeekBarVolume() {
@@ -140,6 +146,16 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
                 .debounce(5, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(progress -> volumePresenter.seekBarVolumeProgressChanged(progress));
+    }
+
+    private void initImageButtonBalanceCenter() {
+        balanceCenterDisposable = RxView.clicks(binding.imageButtonBalanceCenter)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
+                .subscribe(unit -> {
+                    balancePresenter.seekBarBalanceProgressChanged(100);
+                    binding.seekBarBalance.setProgress(100);
+                });
     }
 
     @Override
@@ -196,6 +212,7 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
         super.onDestroyView();
         volumeDisposable.dispose();
         balanceDisposable.dispose();
+        balanceCenterDisposable.dispose();
         binding = null;
     }
 }

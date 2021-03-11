@@ -37,11 +37,9 @@ import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.mvp.presenters.FrequencyPresenter;
 import com.miklene.frequencygenerator.mvp.presenters.PlaybackPresenter;
-import com.miklene.frequencygenerator.mvp.presenters.SingleFrequencyPresenter;
 import com.miklene.frequencygenerator.mvp.presenters.WaveTypePresenter;
 import com.miklene.frequencygenerator.mvp.views.FrequencyView;
 import com.miklene.frequencygenerator.mvp.views.PlaybackView;
-import com.miklene.frequencygenerator.mvp.views.SingleFrequencyView;
 import com.miklene.frequencygenerator.mvp.presenters.VolumePresenter;
 import com.miklene.frequencygenerator.mvp.views.VolumeView;
 import com.miklene.frequencygenerator.databinding.FragmentSingleFrequencyBinding;
@@ -52,18 +50,19 @@ import com.miklene.frequencygenerator.repository.WaveRepository;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.functions.Consumer;
-import kotlin.Unit;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
 public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView,
-        VolumeDialogFragment.VolumeListener, VolumeView, FrequencyView, WaveTypeView {
+        VolumeDialogFragment.VolumeListener, VolumeView, FrequencyView, WaveTypeView{
     public static final String ARG_PAGE = "ARG_PAGE";
     private SharedPreferences preferences;
-    private  WaveRepository repository;
+    private WaveRepository repository;
+
     @InjectPresenter
     PlaybackPresenter playbackPresenter;
 
@@ -96,8 +95,8 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         return new WaveTypePresenter(getRepository());
     }
 
-    private WaveRepository getRepository(){
-        if (preferences == null){
+    private WaveRepository getRepository() {
+        if (preferences == null) {
             preferences = Objects.requireNonNull(this.getActivity())
                     .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
             repository = PreferencesRepository.getInstance();
@@ -227,7 +226,21 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     }
 
     private void initIncreaseButton() {
-        binding.imageButtonIncreaseFrequency.setOnTouchListener((v, event) -> {
+        RxView.touches(binding.imageButtonIncreaseFrequency)
+                .debounce(5,TimeUnit.MILLISECONDS)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(t -> {
+                    if (t.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                        binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
+                        frequencyPresenter.onImageButtonIncreaseDown();
+                    }
+                    if (t.getActionMasked() == MotionEvent.ACTION_UP)
+                        frequencyPresenter.onImageButtonIncreaseUp();
+                    if (t.getActionMasked() == MotionEvent.ACTION_CANCEL)
+                        frequencyPresenter.onImageButtonIncreaseUp();
+                });
+     /*   binding.imageButtonIncreaseFrequency.setOnTouchListener((v, event) -> {
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
                 frequencyPresenter.onImageButtonIncreaseDown();
@@ -237,11 +250,25 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
                 frequencyPresenter.onImageButtonIncreaseUp();
             }
             return true;
-        });
+        });*/
     }
 
     private void initDecreaseButton() {
-        binding.imageButtonDecreaseFrequency.setOnTouchListener((v, event) -> {
+        RxView.touches(binding.imageButtonDecreaseFrequency)
+                .debounce(5,TimeUnit.MILLISECONDS)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(t -> {
+                    if (t.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                        binding.imageButtonDecreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
+                        frequencyPresenter.onImageButtonDecreaseDown();
+                    }
+                    if (t.getActionMasked() == MotionEvent.ACTION_UP)
+                        frequencyPresenter.onImageButtonDecreaseUp();
+                    if (t.getActionMasked() == MotionEvent.ACTION_CANCEL)
+                        frequencyPresenter.onImageButtonDecreaseUp();
+                });
+      /*  binding.imageButtonDecreaseFrequency.setOnTouchListener((v, event) -> {
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 binding.imageButtonDecreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
                 frequencyPresenter.onImageButtonDecreaseDown();
@@ -251,8 +278,10 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
                 frequencyPresenter.onImageButtonDecreaseUp();
             }
             return true;
-        });
+        });*/
     }
+
+
 
     @Override
     public void setEditTextFrequencyText(String frequency) {
@@ -364,7 +393,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     public void cancelButtonClicked() {
 
     }
-
 
     public class CustomImageButton extends AppCompatImageButton {
 
