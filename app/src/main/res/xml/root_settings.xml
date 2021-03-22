@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:key="Settings"
+    android:title="@string/settings">
 
-    <PreferenceCategory app:title="@string/frequency">
+    <androidx.preference.PreferenceCategory app:title="@string/frequency">
 
         <ListPreference
-            app:defaultValue="reply"
+            android:key="Scale"
+            app:defaultValue="Logarithmic"
             app:entries="@array/scale_entries"
             app:entryValues="@array/scale_values"
-            app:key="reply"
             app:title="@string/scale"
             app:useSimpleSummaryProvider="true" />
 
-    </PreferenceCategory>
-</PreferenceScreen>
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

@@ -11,6 +11,8 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
+        <item name="colorAccent">@color/blue</item>
         <!-- Customize your theme here. -->
     </style>
 
@@ -31,8 +33,7 @@
         <item name="colorAccent">@color/blue</item>
     </style>
 
-    <style name="ThemeSettingActivity" parent="Theme.AppCompat.Light.DarkActionBar">
-
+    <style name="ThemeSettingActivity" parent="Theme.FrequencyGenerator">
     </style>
 
     <style name="TextViewTitleSettings" parent="Widget.AppCompat.TextView">
