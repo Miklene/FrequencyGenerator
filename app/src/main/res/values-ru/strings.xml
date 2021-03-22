@@ -19,4 +19,8 @@
 
     <!--Navigation-->
     <string name="settings">Настройки</string>
+
+    <!--Settings-->
+    <string name="scale">Шкала</string>
+    <string name="range">Диапазон</string>
 </resources>

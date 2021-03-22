@@ -5,17 +5,48 @@
     android:layout_height="match_parent"
     android:paddingTop="?attr/actionBarSize">
 
-
-    <Spinner
-        android:id="@+id/spinnerSeekBarScale"
+    <TextView
+        android:id="@+id/textViewTitleFrequency"
+        style="@style/TextViewTitleSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/frequency"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <TextView
+        android:id="@+id/textViewSubtitleScale"
+        style="@style/TextViewSubTitleSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/scale"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spinnerSeekBarScale" />
+        app:layout_constraintTop_toBottomOf="@id/textViewTitleFrequency"/>
+
+    <TextView
+        android:id="@+id/textViewItemScale"
+        style="@style/TextViewItemSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/frequency"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewSubtitleScale"/>
+
+    <TextView
+        android:id="@+id/textViewSubtitleRange"
+        style="@style/TextViewSubTitleSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/range"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewItemScale"/>
+
+    <TextView
+        android:id="@+id/textViewItemRange"
+        style="@style/TextViewItemSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/frequency"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewSubtitleRange"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
