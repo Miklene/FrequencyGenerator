@@ -95,7 +95,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     private WaveRepository getRepository() {
         if (preferences == null) {
-            preferences = Objects.requireNonNull(this.getActivity())
+            preferences = this.requireActivity()
                     .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
             repository = PreferencesRepository.getInstance();
             repository.setSharedPreferences(preferences);
@@ -149,7 +149,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
             v.startAnimation(new AlphaAnimation(1F, 0.8F));
 
             DialogFragment dialogFragment = new VolumeDialogFragment();
-            dialogFragment.show(Objects.requireNonNull(getActivity())
+            dialogFragment.show(requireActivity()
                     .getSupportFragmentManager(), "TAG");
         });
     }

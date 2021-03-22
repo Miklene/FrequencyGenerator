@@ -3,17 +3,24 @@ package com.miklene.frequencygenerator.ui.activities;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
+import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.preference.EditTextPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.databinding.ActivityMainBinding;
 import com.miklene.frequencygenerator.databinding.ActivitySettingsBinding;
+import com.miklene.frequencygenerator.ui.fragments.RangePreferenceDialogFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -52,6 +59,35 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_settings, rootKey);
+            EditTextPreference rangeFromPreference = findPreference("range_from");
+            if(rangeFromPreference!=null){
+                rangeFromPreference.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
+                    @Override
+                    public void onBindEditText(@NonNull EditText editText) {
+                        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    }
+                });
+            }
+            EditTextPreference rangeToPreference = findPreference("range_to");
+            if(rangeToPreference!=null){
+                rangeToPreference.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
+                    @Override
+                    public void onBindEditText(@NonNull EditText editText) {
+                        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    }
+                });
+            }
+        }
+
+        @Override
+        public boolean onPreferenceTreeClick(Preference preference) {
+            if(preference.getKey().equals("Range")){
+                DialogFragment rangeDialog = new RangePreferenceDialogFragment();
+                rangeDialog.show(requireActivity()
+                        .getSupportFragmentManager(), "RANGE");
+
+            }
+            return super.onPreferenceTreeClick(preference);
         }
 
         @Override

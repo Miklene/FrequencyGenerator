@@ -22,5 +22,18 @@
 
     <!--Settings-->
     <string name="scale">Шкала</string>
+    <string-array name="scale_entries">
+        <item>Линейная</item>
+        <item>Логарифмическая</item>
+    </string-array>
+
+    <string-array name="scale_values">
+        <item>linear</item>
+        <item>logarithmic</item>
+    </string-array>
     <string name="range">Диапазон</string>
+    <string name="range_from">Диапазон от</string>
+    <string name="range_to">Диапазон до</string>
+    <string name="min_range">Min</string>
+    <string name="max_range">Max</string>
 </resources>

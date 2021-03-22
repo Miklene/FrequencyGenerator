@@ -31,6 +31,10 @@
     </string-array>
 
     <string name="range">Range</string>
+    <string name="range_from">Range from</string>
+    <string name="range_to">Range to</string>
+    <string name="min_range">Min</string>
+    <string name="max_range">Max</string>
 
     <!-- Preference Titles -->
    
