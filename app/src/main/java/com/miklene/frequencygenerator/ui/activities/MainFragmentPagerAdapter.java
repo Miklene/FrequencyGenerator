@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.miklene.frequencygenerator.R;
+import com.miklene.frequencygenerator.ui.fragments.SingleFrequencyFragment;
 
 public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
     final int PAGE_COUNT = 1;

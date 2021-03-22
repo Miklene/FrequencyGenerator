@@ -1,4 +1,4 @@
-package com.miklene.frequencygenerator.ui.activities;
+package com.miklene.frequencygenerator.ui.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,7 +18,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -51,11 +50,9 @@ import com.miklene.frequencygenerator.repository.WaveRepository;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
 public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView,

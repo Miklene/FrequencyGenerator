@@ -7,9 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.miklene.frequencygenerator.ui.activities.SingleFrequencyFragment"
-        android:label="Home"
+        android:name="com.miklene.frequencygenerator.ui.fragments.SingleFrequencyFragment"
+        android:label="@string/single_frequency"
         tools:layout="@layout/fragment_single_frequency" />
-
-
 </navigation>

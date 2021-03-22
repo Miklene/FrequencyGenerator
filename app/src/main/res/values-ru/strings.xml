@@ -16,4 +16,7 @@
     <string name="balance">Баланс звука</string>
     <string name="left_channel">Левый канал</string>
     <string name="right_channel">Правый канал</string>
+
+    <!--Navigation-->
+    <string name="settings">Настройки</string>
 </resources>

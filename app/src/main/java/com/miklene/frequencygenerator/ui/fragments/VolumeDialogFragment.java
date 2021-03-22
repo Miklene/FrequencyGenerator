@@ -1,4 +1,4 @@
-package com.miklene.frequencygenerator.ui.activities;
+package com.miklene.frequencygenerator.ui.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
