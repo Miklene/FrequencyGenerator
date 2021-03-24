@@ -33,8 +33,13 @@
     <string name="range">Range</string>
     <string name="range_from">Range from</string>
     <string name="range_to">Range to</string>
-    <string name="min_range">Min</string>
-    <string name="max_range">Max</string>
+    <string name="from_range">From</string>
+    <string name="to_range">To</string>
+    <string name="error_lower_one">Value must be greater than 0</string>
+    <string name="error_greater_22000">Value must be less than 22000</string>
+    <string name="error_empty_field">Field is empty</string>
+    <string name="error_to_greater_from">"'To' value must be greater than 'From' value"</string>
+    <string name="error_from_less_to">"'From' value must be less than 'To' value"</string>
 
     <!-- Preference Titles -->
    

@@ -32,7 +32,19 @@ public class SettingsActivity extends AppCompatActivity {
         binding = ActivitySettingsBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+        initToolbar();
+        if (savedInstanceState == null) {
+            attachFragment();
+        }
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String lanSettings = prefs.getString("Scale", null);
+    }
 
+    private void initToolbar() {
         binding.toolbar.setTitle(getString(R.string.settings));
         binding.toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
         binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -41,26 +53,22 @@ public class SettingsActivity extends AppCompatActivity {
                 finish();
             }
         });
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.settings, new SettingsFragment())
-                    .commit();
-        }
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this);
-        String lanSettings = prefs.getString("Scale", null);
     }
+
+    private void attachFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.settings, new SettingsFragment())
+                .commit();
+    }
+
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_settings, rootKey);
             EditTextPreference rangeFromPreference = findPreference("range_from");
-            if(rangeFromPreference!=null){
+            if (rangeFromPreference != null) {
                 rangeFromPreference.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
                     @Override
                     public void onBindEditText(@NonNull EditText editText) {
@@ -69,7 +77,7 @@ public class SettingsActivity extends AppCompatActivity {
                 });
             }
             EditTextPreference rangeToPreference = findPreference("range_to");
-            if(rangeToPreference!=null){
+            if (rangeToPreference != null) {
                 rangeToPreference.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
                     @Override
                     public void onBindEditText(@NonNull EditText editText) {
@@ -81,11 +89,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         @Override
         public boolean onPreferenceTreeClick(Preference preference) {
-            if(preference.getKey().equals("Range")){
+            if (preference.getKey().equals("range")) {
                 DialogFragment rangeDialog = new RangePreferenceDialogFragment();
                 rangeDialog.show(requireActivity()
                         .getSupportFragmentManager(), "RANGE");
-
             }
             return super.onPreferenceTreeClick(preference);
         }
