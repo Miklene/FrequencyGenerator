@@ -2,35 +2,22 @@ package com.miklene.frequencygenerator.repository;
 
 import android.content.SharedPreferences;
 
-import com.miklene.frequencygenerator.wave.WaveType;
-
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.Subject;
 
 public class SettingsPreferencesRepository implements SettingsRepository{
 
-    private SharedPreferences preferences;
-    private static SettingsRepository repository;
+    private final SharedPreferences preferences;
 
     private static final String PREFS_SCALE = "Scale";
     private static final String PREFS_RANGE_FROM = "Range_from";
     private static final String PREFS_RANGE_TO = "Range_to";
     private static final String PREFS_RANGE = "range";
 
-    private Subject<String> rangeSubject;
+    private static Subject<String> rangeSubject;
 
-    public static SettingsRepository getInstance(){
-        if (repository == null)
-            repository = new SettingsPreferencesRepository();
-        return repository;
-    }
-
-    private SettingsPreferencesRepository() {
-    }
-
-    @Override
-    public void setSharedPreferences(SharedPreferences preferences){
+    public SettingsPreferencesRepository(SharedPreferences preferences) {
         this.preferences = preferences;
     }
 

@@ -119,7 +119,8 @@ public class SettingsActivity extends AppCompatActivity {
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             Preference rangePreference = findPreference("range");
-            SettingsRepository repository = SettingsPreferencesRepository.getInstance();
+            SettingsRepository repository = new SettingsPreferencesRepository(
+                    PreferenceManager.getDefaultSharedPreferences(getActivity()));
             repository.setSharedPreferences(
                     PreferenceManager.getDefaultSharedPreferences(getContext()));
             if (rangePreference != null) {

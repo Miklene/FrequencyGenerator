@@ -7,8 +7,6 @@ import io.reactivex.rxjava3.subjects.Subject;
 
 public interface SettingsRepository {
 
-    void setSharedPreferences(SharedPreferences preferences);
-
     Subject<String> getRangeSubject();
 
     void saveScale(String scale);

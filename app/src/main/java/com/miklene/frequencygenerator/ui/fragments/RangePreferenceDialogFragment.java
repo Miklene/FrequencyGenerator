@@ -3,11 +3,8 @@ package com.miklene.frequencygenerator.ui.fragments;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
@@ -21,15 +18,10 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.databinding.FragmentDialogRangePreferenceBinding;
-import com.miklene.frequencygenerator.databinding.FragmentDialogVolumeBinding;
 import com.miklene.frequencygenerator.mvp.presenters.RangePresenter;
-import com.miklene.frequencygenerator.mvp.presenters.VolumePresenter;
 import com.miklene.frequencygenerator.mvp.views.RangeView;
-import com.miklene.frequencygenerator.repository.PreferencesRepository;
 import com.miklene.frequencygenerator.repository.SettingsPreferencesRepository;
 import com.miklene.frequencygenerator.repository.SettingsRepository;
-import com.miklene.frequencygenerator.repository.WaveRepository;
-import com.miklene.frequencygenerator.settings.Settings;
 
 public class RangePreferenceDialogFragment extends MvpAppCompatDialogFragment implements RangeView {
 
@@ -47,8 +39,8 @@ public class RangePreferenceDialogFragment extends MvpAppCompatDialogFragment im
 
     private SettingsRepository getRepository() {
         if (repository == null) {
-            repository = SettingsPreferencesRepository.getInstance();
-            repository.setSharedPreferences(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+            repository = new SettingsPreferencesRepository(
+                    PreferenceManager.getDefaultSharedPreferences(getActivity()));
         }
         return repository;
     }
@@ -62,23 +54,14 @@ public class RangePreferenceDialogFragment extends MvpAppCompatDialogFragment im
         builder.setView(binding.getRoot());
         builder.setTitle("Range");
         builder.setPositiveButton(getResources().getString(R.string.dialog_ok),
-                new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+                (dialog, which) -> {
 
-            }
+                });
+        builder.setNegativeButton(getResources().getString(R.string.dialog_cancel), (dialog, which) -> {
+
         });
-        builder.setNegativeButton(getResources().getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        builder.setNeutralButton(getResources().getString(R.string.dialog_reset), (dialog, which) -> {
 
-            }
-        });
-        builder.setNeutralButton(getResources().getString(R.string.dialog_reset), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
         });
         return builder.create();
     }
@@ -94,18 +77,15 @@ public class RangePreferenceDialogFragment extends MvpAppCompatDialogFragment im
     private void initPositiveButton() {
         if (dialog != null) {
             Button positiveButton = dialog.getButton(Dialog.BUTTON_POSITIVE);
-            positiveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    validateTextFields();
-                    if (binding.textFieldFrom.getError() == null
-                            && binding.textFieldTo.getError() == null) {
-                        rangePresenter.saveRangeFrom(binding.textInputFrom.getText().toString());
-                        rangePresenter.saveRangeTo(binding.textInputTo.getText().toString());
-                        rangePresenter.saveRange(binding.textInputFrom.getText().toString(),
-                                binding.textInputTo.getText().toString());
-                        dialog.dismiss();
-                    }
+            positiveButton.setOnClickListener(v -> {
+                validateTextFields();
+                if (binding.textFieldFrom.getError() == null
+                        && binding.textFieldTo.getError() == null) {
+                    rangePresenter.saveRangeFrom(binding.textInputFrom.getText().toString());
+                    rangePresenter.saveRangeTo(binding.textInputTo.getText().toString());
+                    rangePresenter.saveRange(binding.textInputFrom.getText().toString(),
+                            binding.textInputTo.getText().toString());
+                    dialog.dismiss();
                 }
             });
         }
@@ -114,24 +94,14 @@ public class RangePreferenceDialogFragment extends MvpAppCompatDialogFragment im
     private void initNeutralButton(){
         if (dialog != null) {
             Button neutralButton = dialog.getButton(Dialog.BUTTON_NEUTRAL);
-            neutralButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                   rangePresenter.onNeutralButtonClicked();
-                }
-            });
+            neutralButton.setOnClickListener(v -> rangePresenter.onNeutralButtonClicked());
         }
     }
 
     private void initNegativeButton(){
         if (dialog != null) {
             Button negativeButton = dialog.getButton(Dialog.BUTTON_NEGATIVE);
-            negativeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
+            negativeButton.setOnClickListener(v -> dialog.dismiss());
         }
     }
 
