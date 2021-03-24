@@ -16,19 +16,21 @@
             app:title="@string/scale"
             app:useSimpleSummaryProvider="true" />
 
-    <!--    <EditTextPreference
-            android:dialogTitle="Range"
-            android:key="range_from"
+        <EditTextPreference
+            android:dialogTitle="Range_from"
+            android:key="Range_from"
             app:defaultValue="1"
             app:title="@string/range_from"
-            app:useSimpleSummaryProvider="true" />
+            app:useSimpleSummaryProvider="true"
+            app:isPreferenceVisible="false"/>
 
         <EditTextPreference
-            android:dialogTitle="Range"
-            android:key="range_to"
+            android:dialogTitle="Range_to"
+            android:key="Range_to"
             app:defaultValue="22000"
             app:title="@string/range_to"
-            app:useSimpleSummaryProvider="true" />-->
+            app:useSimpleSummaryProvider="true"
+            app:isPreferenceVisible="false"/>
 
         <Preference
             android:key="range"

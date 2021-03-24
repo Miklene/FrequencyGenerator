@@ -41,6 +41,10 @@
     <string name="error_to_greater_from">"'To' value must be greater than 'From' value"</string>
     <string name="error_from_less_to">"'From' value must be less than 'To' value"</string>
 
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_reset">Reset</string>
+
     <!-- Preference Titles -->
    
 </resources>
