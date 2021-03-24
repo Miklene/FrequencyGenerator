@@ -71,7 +71,9 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
 
     private WaveRepository getRepository() {
         if (preferences == null) {
-            repository = PreferencesRepository.getInstance();
+            preferences = this.requireActivity()
+                    .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
+            repository = new PreferencesRepository(preferences);
         }
         return repository;
     }

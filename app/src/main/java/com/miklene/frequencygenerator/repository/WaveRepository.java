@@ -16,8 +16,6 @@ public interface WaveRepository {
     Subject<Integer> getLeftChannelSubject();
     Subject<String> getWaveTypeSubject();
 
-    void setSharedPreferences(SharedPreferences preferences);
-
     void saveVolume(int volume);
     Single<Integer> loadVolume();
     void saveFrequency(float frequency);

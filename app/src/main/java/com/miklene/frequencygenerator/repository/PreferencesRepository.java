@@ -23,27 +23,13 @@ public class PreferencesRepository implements WaveRepository {
     private static final String PREFS_RIGHT_CHANNEL = "RightChannel";
     private static final String PREFS_LEFT_CHANNEL = "LeftChannel";
 
-    private Subject<Float> frequencySubject;
-    private Subject<Integer> volumeSubject;
-    private Subject<Integer> rightChannelSubject;
-    private Subject<Integer> leftChannelSubject;
-    private Subject<String> waveTypeSubject;
+    private static Subject<Float> frequencySubject;
+    private static Subject<Integer> volumeSubject;
+    private static Subject<Integer> rightChannelSubject;
+    private static Subject<Integer> leftChannelSubject;
+    private static Subject<String> waveTypeSubject;
 
-    /*public PreferencesRepository(SharedPreferences preferences) {
-        this.preferences = preferences;
-    }*/
-
-    public static PreferencesRepository getInstance(){
-        if (repository == null)
-            repository = new PreferencesRepository();
-        return repository;
-    }
-
-    private PreferencesRepository() {
-    }
-
-    @Override
-    public void setSharedPreferences(SharedPreferences preferences){
+    public PreferencesRepository(SharedPreferences preferences) {
         this.preferences = preferences;
     }
 

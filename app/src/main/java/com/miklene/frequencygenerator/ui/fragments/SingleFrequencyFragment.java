@@ -56,7 +56,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 
 
 public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView,
-        VolumeDialogFragment.VolumeListener, VolumeView, FrequencyView, WaveTypeView{
+        VolumeDialogFragment.VolumeListener, VolumeView, FrequencyView, WaveTypeView {
     public static final String ARG_PAGE = "ARG_PAGE";
     private SharedPreferences preferences;
     private WaveRepository repository;
@@ -97,8 +97,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         if (preferences == null) {
             preferences = this.requireActivity()
                     .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-            repository = PreferencesRepository.getInstance();
-            repository.setSharedPreferences(preferences);
+            repository = new PreferencesRepository(preferences);
         }
         return repository;
     }
@@ -225,7 +224,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     private void initIncreaseButton() {
         RxView.touches(binding.imageButtonIncreaseFrequency)
-                .debounce(5,TimeUnit.MILLISECONDS)
+                .debounce(5, TimeUnit.MILLISECONDS)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(t -> {
@@ -253,7 +252,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     private void initDecreaseButton() {
         RxView.touches(binding.imageButtonDecreaseFrequency)
-                .debounce(5,TimeUnit.MILLISECONDS)
+                .debounce(5, TimeUnit.MILLISECONDS)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(t -> {
@@ -280,7 +279,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     }
 
 
-
     @Override
     public void setEditTextFrequencyText(String frequency) {
         binding.editTextFrequency.setText(frequency);
@@ -303,7 +301,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     @Override
     public void vibrate() {
-        Vibrator v = (Vibrator) Objects.requireNonNull(getActivity())
+        Vibrator v = (Vibrator) requireActivity()
                 .getSystemService(Context.VIBRATOR_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             v.vibrate(VibrationEffect
@@ -322,7 +320,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     }
 
     private void initSpinnerWaveType() {
-        spinnerItems = Objects.requireNonNull(getActivity()).getResources().getStringArray(R.array.wave_type);
+        spinnerItems = requireActivity().getResources().getStringArray(R.array.wave_type);
         MyCustomAdapter adapter = new MyCustomAdapter(this.getActivity(), R.layout.spinner_row, spinnerItems);
         adapter.setDropDownViewResource(R.layout.spinner_row);
         binding.spinnerWaveType.setAdapter(adapter);

@@ -25,6 +25,7 @@ import com.miklene.frequencygenerator.repository.SettingsPreferencesRepository;
 import com.miklene.frequencygenerator.repository.SettingsRepository;
 import com.miklene.frequencygenerator.settings.Settings;
 import com.miklene.frequencygenerator.ui.fragments.RangePreferenceDialogFragment;
+import com.miklene.frequencygenerator.ui.fragments.SettingsFragment;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Function3;
@@ -51,10 +52,6 @@ public class SettingsActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             attachFragment();
         }
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String lanSettings = prefs.getString("Scale", null);
     }
@@ -62,12 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void initToolbar() {
         binding.toolbar.setTitle(getString(R.string.settings));
         binding.toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
-        binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        binding.toolbar.setNavigationOnClickListener(view -> finish());
     }
 
     private void attachFragment() {
@@ -75,66 +67,5 @@ public class SettingsActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.settings, new SettingsFragment())
                 .commit();
-    }
-
-
-    public static class SettingsFragment extends PreferenceFragmentCompat {
-
-        private Disposable rangeDisposable;
-
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.root_settings, rootKey);
-            /*EditTextPreference rangeFromPreference = findPreference("range_from");
-            if (rangeFromPreference != null) {
-                rangeFromPreference.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
-                    @Override
-                    public void onBindEditText(@NonNull EditText editText) {
-                        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    }
-                });
-            }
-            EditTextPreference rangeToPreference = findPreference("range_to");
-            if (rangeToPreference != null) {
-                rangeToPreference.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
-                    @Override
-                    public void onBindEditText(@NonNull EditText editText) {
-                        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    }
-                });
-            }*/
-        }
-
-        @Override
-        public boolean onPreferenceTreeClick(Preference preference) {
-            if (preference.getKey().equals("range")) {
-                DialogFragment rangeDialog = new RangePreferenceDialogFragment();
-                rangeDialog.show(requireActivity()
-                        .getSupportFragmentManager(), "RANGE");
-            }
-            return super.onPreferenceTreeClick(preference);
-        }
-
-        @Override
-        public void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            Preference rangePreference = findPreference("range");
-            SettingsRepository repository = new SettingsPreferencesRepository(
-                    PreferenceManager.getDefaultSharedPreferences(getActivity()));
-            repository.setSharedPreferences(
-                    PreferenceManager.getDefaultSharedPreferences(getContext()));
-            if (rangePreference != null) {
-                rangeDisposable = repository.getRangeSubject()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(rangePreference::setSummary);
-            }
-        }
-
-        @Override
-        public void onDestroyView() {
-            super.onDestroyView();
-            if (rangeDisposable != null)
-                rangeDisposable.dispose();
-        }
     }
 }
