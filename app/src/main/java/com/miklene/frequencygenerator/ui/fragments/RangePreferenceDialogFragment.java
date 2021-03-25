@@ -40,7 +40,7 @@ public class RangePreferenceDialogFragment extends MvpAppCompatDialogFragment im
     private SettingsRepository getRepository() {
         if (repository == null) {
             repository = new SettingsPreferencesRepository(
-                    PreferenceManager.getDefaultSharedPreferences(getActivity()));
+                    PreferenceManager.getDefaultSharedPreferences(requireActivity()));
         }
         return repository;
     }
@@ -75,10 +75,11 @@ public class RangePreferenceDialogFragment extends MvpAppCompatDialogFragment im
     }
 
     private void initPositiveButton() {
-        if (dialog != null) {
             Button positiveButton = dialog.getButton(Dialog.BUTTON_POSITIVE);
             positiveButton.setOnClickListener(v -> {
-                validateTextFields();
+                rangePresenter.onPositiveButtonClicked(binding.textInputFrom.getText().toString(),
+                        binding.textInputTo.getText().toString());
+                /*validateTextFields();
                 if (binding.textFieldFrom.getError() == null
                         && binding.textFieldTo.getError() == null) {
                     rangePresenter.saveRangeFrom(binding.textInputFrom.getText().toString());
@@ -86,23 +87,19 @@ public class RangePreferenceDialogFragment extends MvpAppCompatDialogFragment im
                     rangePresenter.saveRange(binding.textInputFrom.getText().toString(),
                             binding.textInputTo.getText().toString());
                     dialog.dismiss();
-                }
+                }*/
             });
-        }
+
     }
 
     private void initNeutralButton(){
-        if (dialog != null) {
             Button neutralButton = dialog.getButton(Dialog.BUTTON_NEUTRAL);
             neutralButton.setOnClickListener(v -> rangePresenter.onNeutralButtonClicked());
-        }
     }
 
     private void initNegativeButton(){
-        if (dialog != null) {
-            Button negativeButton = dialog.getButton(Dialog.BUTTON_NEGATIVE);
-            negativeButton.setOnClickListener(v -> dialog.dismiss());
-        }
+        Button negativeButton = dialog.getButton(Dialog.BUTTON_NEGATIVE);
+        negativeButton.setOnClickListener(v -> dialog.dismiss());
     }
 
     @Override
@@ -115,6 +112,36 @@ public class RangePreferenceDialogFragment extends MvpAppCompatDialogFragment im
         binding.textInputTo.setText(range);
     }
 
+    public void showError(String tag, int textId){
+        if( tag.equals("from"))
+            showErrorFieldFrom(textId);
+        if(tag.equals("to"))
+            showErrorFieldTo(textId);
+    }
+    @Override
+    public void showErrorFieldFrom(int textId) {
+        binding.textFieldFrom.setError(getResources().getString(textId));
+    }
+
+    @Override
+    public void showErrorFieldTo(int textId) {
+        binding.textFieldTo.setError(getResources().getString(textId));
+    }
+
+    @Override
+    public void closeDialog() {
+        dialog.dismiss();
+    }
+
+    @Override
+    public void clearErrors() {
+        clearError( binding.textFieldFrom);
+        clearError(binding.textFieldTo);
+    }
+
+    private void clearError(TextInputLayout field) {
+        field.setError(null);
+    }
 
     @Override
     public void onResume() {
@@ -124,8 +151,8 @@ public class RangePreferenceDialogFragment extends MvpAppCompatDialogFragment im
     private void validateTextFields() {
         TextInputLayout fieldFrom = binding.textFieldFrom;
         TextInputLayout fieldTo = binding.textFieldTo;
-        clearErrors(fieldFrom);
-        clearErrors(fieldTo);
+        clearError(fieldFrom);
+        clearError(fieldTo);
         int from = 0;
         try {
             from = getValueFromTextField(fieldFrom);
@@ -220,10 +247,7 @@ public class RangePreferenceDialogFragment extends MvpAppCompatDialogFragment im
          }
      }
  */
-    private void clearErrors(TextInputLayout field) {
-        field.setError(null);
 
-    }
 
     private void showErrorGreaterThan22000(TextInputLayout field) {
         field.setError(getResources().getString(R.string.error_greater_22000));

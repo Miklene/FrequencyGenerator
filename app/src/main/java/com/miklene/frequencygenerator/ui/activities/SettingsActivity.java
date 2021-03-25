@@ -52,8 +52,6 @@ public class SettingsActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             attachFragment();
         }
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String lanSettings = prefs.getString("Scale", null);
     }
 
     private void initToolbar() {

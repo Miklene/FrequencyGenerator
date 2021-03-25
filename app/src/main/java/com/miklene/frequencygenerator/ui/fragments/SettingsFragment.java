@@ -57,7 +57,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         super.onCreate(savedInstanceState);
         Preference rangePreference = findPreference("range");
         SettingsRepository repository = new SettingsPreferencesRepository(
-                PreferenceManager.getDefaultSharedPreferences(getActivity()));
+                PreferenceManager.getDefaultSharedPreferences(requireActivity()));
         if (rangePreference != null) {
             rangeDisposable = repository.getRangeSubject()
                     .observeOn(AndroidSchedulers.mainThread())
