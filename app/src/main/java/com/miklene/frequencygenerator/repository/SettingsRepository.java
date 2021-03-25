@@ -8,9 +8,13 @@ import io.reactivex.rxjava3.subjects.Subject;
 public interface SettingsRepository {
 
     Subject<String> getRangeSubject();
+    Subject<String> getRangeFromSubject();
+    Subject<String> getRangeToSubject();
+    Subject<String> getScaleSubject();
 
     void saveScale(String scale);
     Single<String> loadScale();
+    String loadStringScale();
     void saveRangeFrom(String range);
     Single<String> loadRangeFrom();
     String loadStringRangeFrom();

@@ -16,6 +16,9 @@ public class SettingsPreferencesRepository implements SettingsRepository{
     private static final String PREFS_RANGE = "range";
 
     private static Subject<String> rangeSubject;
+    private static Subject<String> rangeFromSubject;
+    private static Subject<String> rangeToSubject;
+    private static Subject<String> scaleSubject;
 
     public SettingsPreferencesRepository(SharedPreferences preferences) {
         this.preferences = preferences;
@@ -29,8 +32,28 @@ public class SettingsPreferencesRepository implements SettingsRepository{
     }
 
     @Override
+    public Subject<String> getRangeFromSubject() {
+        rangeFromSubject = BehaviorSubject.createDefault(loadStringRangeFrom());
+        return rangeFromSubject;
+    }
+
+    @Override
+    public Subject<String> getRangeToSubject() {
+        rangeToSubject = BehaviorSubject.createDefault(loadStringRangeTo());
+        return rangeToSubject;
+    }
+
+    @Override
+    public Subject<String> getScaleSubject() {
+        scaleSubject = BehaviorSubject.createDefault(loadStringScale());
+        return scaleSubject;
+    }
+
+    @Override
     public void saveScale(String scale) {
         getEditor().putString(PREFS_SCALE, scale).apply();
+        if(scaleSubject!=null)
+            scaleSubject.onNext(scale);
     }
 
     @Override
@@ -40,8 +63,15 @@ public class SettingsPreferencesRepository implements SettingsRepository{
     }
 
     @Override
+    public String loadStringScale() {
+       return preferences.getString(PREFS_SCALE, "logarithmic");
+    }
+
+    @Override
     public void saveRangeFrom(String range) {
         getEditor().putString(PREFS_RANGE_FROM, range).apply();
+        if(rangeFromSubject!=null)
+            rangeFromSubject.onNext(range);
     }
 
     @Override
@@ -58,6 +88,8 @@ public class SettingsPreferencesRepository implements SettingsRepository{
     @Override
     public void saveRangeTo(String range) {
         getEditor().putString(PREFS_RANGE_TO, range).apply();
+        if(rangeToSubject!=null)
+            rangeToSubject.onNext(range);
     }
 
     @Override

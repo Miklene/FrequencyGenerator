@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -62,6 +63,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             rangeDisposable = repository.getRangeSubject()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(rangePreference::setSummary);
+        }
+        ListPreference scalePreference = findPreference("Scale");
+        if(scalePreference!=null){
+            scalePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    repository.saveScale(newValue.toString());
+                    return true;
+                }
+            });
         }
     }
 

@@ -3,7 +3,10 @@ package com.miklene.frequencygenerator.mvp.presenters;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.miklene.frequencygenerator.mvp.views.FrequencyView;
+import com.miklene.frequencygenerator.repository.SettingsRepository;
 import com.miklene.frequencygenerator.repository.WaveRepository;
+import com.miklene.frequencygenerator.util.FrequencyCounter;
+import com.miklene.frequencygenerator.util.FrequencyCounterFactory;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -18,13 +21,45 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
 
     private final WaveRepository sharedPrefRepository;
+    private final SettingsRepository settingsRepository;
+    private FrequencyCounter counter;
     private float frequency;
     private long repeats = 0;
     private final int step = 1;
     private Disposable buttonDisposable;
+    private Disposable scaleDisposable;
+    private Disposable rangeFromDisposable;
+    private Disposable rangeToDisposable;
 
-    public FrequencyPresenter(WaveRepository sharedPrefRepository) {
+    public FrequencyPresenter(WaveRepository sharedPrefRepository, SettingsRepository settingsRepository) {
         this.sharedPrefRepository = sharedPrefRepository;
+        this.settingsRepository = settingsRepository;
+        counter = FrequencyCounterFactory.getFrequencyCounter(
+                settingsRepository.loadStringScale(),
+                Integer.parseInt(settingsRepository.loadStringRangeFrom()),
+                Integer.parseInt(settingsRepository.loadStringRangeTo()));
+        scaleDisposable = settingsRepository.getScaleSubject()
+                .doOnNext(s -> {
+                    counter = FrequencyCounterFactory.getFrequencyCounter(
+                            s,
+                            Integer.parseInt(settingsRepository.loadStringRangeFrom()),
+                            Integer.parseInt(settingsRepository.loadStringRangeTo()));
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(r -> getViewState().setSeekBarMax(counter.countSeekBarMax()))
+                .subscribe();
+        rangeFromDisposable = settingsRepository.getRangeFromSubject()
+                .map(Integer::parseInt)
+                .doOnNext(r -> counter.setValueFrom(r))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(r -> getViewState().setSeekBarMax(counter.countSeekBarMax()))
+                .subscribe();
+        rangeToDisposable = settingsRepository.getRangeToSubject()
+                .map(Integer::parseInt)
+                .doOnNext(r -> counter.setValueTo(r))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(r -> getViewState().setSeekBarMax(counter.countSeekBarMax()))
+                .subscribe();
     }
 
     @Override
@@ -53,10 +88,11 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     }
 
     public void onSeekBarFrequencyChanged(int progress) {
-        if (progress == 14425215)
+        frequency = (float)counter.countFrequency(progress);
+       /* if (progress == 14425215)
             frequency = 22000.00f;
         else
-            frequency = calculateFrequency(progress);
+            frequency = calculateFrequency(progress);*/
         saveFrequency(frequency)
                 .doOnComplete(() -> setEditTextFrequency(frequency))
                 .subscribe();
@@ -110,7 +146,7 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     }
 
     private int calculateSeekBarProgress(double value) {
-        return (int) ((Math.log(value) / Math.log(2)) * 1000000);
+        return counter.countProgress(value);//int) ((Math.log(value) / Math.log(2)) * 1000000);
     }
 
     public void onImageButtonIncreaseDown() {

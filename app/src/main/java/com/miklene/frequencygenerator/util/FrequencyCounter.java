@@ -7,14 +7,30 @@ public abstract class FrequencyCounter {
     protected int progressFrom;
     protected int progressTo;
 
-    public FrequencyCounter(int progressFrom, int progressTo) {
-        this.progressFrom = progressFrom;
-        this.progressTo = progressTo;
+    public FrequencyCounter(int valueFrom, int valueTo) {
+        this.valueFrom = valueFrom;
+        this.valueTo = valueTo;
+        this.progressFrom = getProgress(valueFrom);
+        this.progressTo = getProgress(valueTo);
     }
 
     public abstract double countFrequency(int seekBarProgress);
 
     public abstract int countProgress(double frequency);
 
+    protected abstract int getProgress(double frequency);
 
+    public int countSeekBarMax(){
+        return progressTo - progressFrom;
+    }
+
+    public void setValueFrom(int valueFrom) {
+        this.valueFrom = valueFrom;
+        progressFrom=getProgress(valueFrom);
+    }
+
+    public void setValueTo(int valueTo) {
+        this.valueTo = valueTo;
+        progressTo=getProgress(valueTo);
+    }
 }

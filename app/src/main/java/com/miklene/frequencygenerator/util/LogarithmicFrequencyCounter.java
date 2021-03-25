@@ -2,8 +2,9 @@ package com.miklene.frequencygenerator.util;
 
 public class LogarithmicFrequencyCounter extends FrequencyCounter {
 
-    public LogarithmicFrequencyCounter(int progressFrom, int progressTo) {
-        super(progressFrom, progressTo);
+
+    public LogarithmicFrequencyCounter(int valueFrom, int valueTo) {
+        super(valueFrom, valueTo);
     }
 
     @Override
@@ -16,6 +17,11 @@ public class LogarithmicFrequencyCounter extends FrequencyCounter {
 
     @Override
     public int countProgress(double frequency) {
+        return (int) ((Math.log(frequency) / Math.log(2)) * 1000000);
+    }
+
+    @Override
+    protected int getProgress(double frequency) {
         return (int) ((Math.log(frequency) / Math.log(2)) * 1000000);
     }
 }

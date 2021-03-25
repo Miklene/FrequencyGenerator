@@ -8,5 +8,6 @@ public interface FrequencyView extends MvpView {
     void initFrequencyViews();
     void setEditTextFrequencyText(String frequency);
     void setSeekBarFrequencyProgress(int progress);
+    void setSeekBarMax(int progress);
     void vibrate();
 }

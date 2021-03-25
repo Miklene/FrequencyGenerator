@@ -5,6 +5,8 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.miklene.frequencygenerator.R;
+import com.miklene.frequencygenerator.exceptions.ValueGreaterThan22000;
+import com.miklene.frequencygenerator.exceptions.ValueLowerThanOneException;
 import com.miklene.frequencygenerator.mvp.views.RangeView;
 import com.miklene.frequencygenerator.repository.SettingsRepository;
 
@@ -59,25 +61,92 @@ public class RangePresenter extends MvpPresenter<RangeView> {
         boolean error = false;
         getViewState().clearErrors();
         try {
-            getValuesFromStrings(from, to);
-        } catch (Exception e) {
-            return;
-        }
-        try {
-            validateValues();
+            validateValue("from", from);
         } catch (Exception e) {
             error = true;
         }
         try {
-            validateFromValueGreaterToValue();
+            validateValue("to", to);
         } catch (Exception e) {
             error = true;
         }
         if (!error)
+            try {
+                validateFromValueGreaterToValue();
+            } catch (Exception e) {
+                error = true;
+            }
+        if (!error) {
+            saveRangeFrom(from);
+            saveRangeTo(to);
+            saveRange(from, to);
             getViewState().closeDialog();
+        }
     }
 
-    private void getValuesFromStrings(String from, String to) throws Exception {
+    private void validateValue(String field, String text) throws Exception {
+        boolean error = false;
+        int value;
+        try {
+            value = getValueFromString(text);
+            saveValue(field, value);
+            validateValueLowerThan1(value);
+            validateValueGreaterThan22000(value);
+        } catch (NumberFormatException e) {
+            showError(field, R.string.error_empty_field);
+            error = true;
+        } catch (ValueLowerThanOneException e) {
+            showError(field, R.string.error_lower_one);
+            error = true;
+        } catch (ValueGreaterThan22000 valueGreaterThan22000) {
+            showError(field, R.string.error_greater_22000);
+            error = true;
+        }
+        if (error)
+            throw new Exception();
+    }
+
+    private int getValueFromString(String value) throws NumberFormatException {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException();
+        }
+    }
+
+    private void validateValueLowerThan1(int value) throws ValueLowerThanOneException {
+        if (value < 1)
+            throw new ValueLowerThanOneException();
+    }
+
+    private void validateValueGreaterThan22000(int value) throws ValueGreaterThan22000 {
+        if (value > 22000)
+            throw new ValueGreaterThan22000();
+    }
+
+    private void validateFromValueGreaterToValue() throws Exception {
+        if (from > to) {
+            getViewState().showErrorFieldFrom(R.string.error_from_less_to);
+            getViewState().showErrorFieldTo(R.string.error_to_greater_from);
+            throw new Exception();
+        }
+    }
+
+    private void saveValue(String field, int value) {
+        if (field.equals("from"))
+            from = value;
+        if (field.equals("to"))
+            to = value;
+    }
+
+    private void showError(String field, int errorId) {
+        if (field.equals("from"))
+            getViewState().showErrorFieldFrom(errorId);
+        if (field.equals("to"))
+            getViewState().showErrorFieldTo(errorId);
+    }
+
+   /* private void getValuesFromStrings(String from, String to) throws Exception {
         boolean error = false;
         try {
             this.from = Integer.parseInt(from);
@@ -93,9 +162,9 @@ public class RangePresenter extends MvpPresenter<RangeView> {
         }
         if (error)
             throw new Exception();
-    }
+    }*/
 
-    private void validateValues() throws Exception {
+   /* private void validateValues() throws Exception {
         boolean error = false;
         try {
             validateFromValue(this.from);
@@ -131,15 +200,9 @@ public class RangePresenter extends MvpPresenter<RangeView> {
             getViewState().showErrorFieldTo(R.string.error_greater_22000);
             throw new Exception();
         }
-    }
+    }*/
 
-    private void validateFromValueGreaterToValue() throws Exception {
-        if (from > to) {
-            getViewState().showErrorFieldFrom(R.string.error_from_less_to);
-            getViewState().showErrorFieldTo(R.string.error_to_greater_from);
-            throw new Exception();
-        }
-    }
+
 
     public void saveRangeFrom(String range) {
         Completable.fromAction(() -> repository.saveRangeFrom(range))

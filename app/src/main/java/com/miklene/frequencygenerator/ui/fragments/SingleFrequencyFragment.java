@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.DialogFragment;
+import androidx.preference.PreferenceManager;
 
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
@@ -46,9 +47,10 @@ import com.miklene.frequencygenerator.databinding.FragmentSingleFrequencyBinding
 import com.miklene.frequencygenerator.databinding.SpinnerRowBinding;
 import com.miklene.frequencygenerator.mvp.views.WaveTypeView;
 import com.miklene.frequencygenerator.repository.PreferencesRepository;
+import com.miklene.frequencygenerator.repository.SettingsPreferencesRepository;
+import com.miklene.frequencygenerator.repository.SettingsRepository;
 import com.miklene.frequencygenerator.repository.WaveRepository;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -59,14 +61,15 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         VolumeDialogFragment.VolumeListener, VolumeView, FrequencyView, WaveTypeView {
     public static final String ARG_PAGE = "ARG_PAGE";
     private SharedPreferences preferences;
-    private WaveRepository repository;
+    private WaveRepository waveRepository;
+    private SettingsRepository settingsRepository;
 
     @InjectPresenter
     PlaybackPresenter playbackPresenter;
 
     @ProvidePresenter
     PlaybackPresenter providePlaybackPresenter() {
-        return new PlaybackPresenter(getRepository());
+        return new PlaybackPresenter(getWaveRepository());
     }
 
     @InjectPresenter()
@@ -74,7 +77,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     @ProvidePresenter
     VolumePresenter provideVolumePresenter() {
-        return new VolumePresenter(getRepository());
+        return new VolumePresenter(getWaveRepository());
     }
 
     @InjectPresenter
@@ -82,7 +85,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     @ProvidePresenter
     FrequencyPresenter provideFrequencyPresenter() {
-        return new FrequencyPresenter(getRepository());
+        return new FrequencyPresenter(getWaveRepository(), getSettingsRepository());
     }
 
     @InjectPresenter
@@ -90,16 +93,24 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     @ProvidePresenter
     WaveTypePresenter provideWaveTypePresenter() {
-        return new WaveTypePresenter(getRepository());
+        return new WaveTypePresenter(getWaveRepository());
     }
 
-    private WaveRepository getRepository() {
-        if (preferences == null) {
+    private WaveRepository getWaveRepository() {
+        if (waveRepository == null) {
             preferences = this.requireActivity()
                     .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-            repository = new PreferencesRepository(preferences);
+            waveRepository = new PreferencesRepository(preferences);
         }
-        return repository;
+        return waveRepository;
+    }
+
+    private SettingsRepository getSettingsRepository() {
+        if (settingsRepository == null) {
+            settingsRepository = new SettingsPreferencesRepository(
+                    PreferenceManager.getDefaultSharedPreferences(getContext()));
+        }
+        return settingsRepository;
     }
 
     private FragmentSingleFrequencyBinding binding;
@@ -182,12 +193,9 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     }
 
     private void initFrequencySeekBar() {
-        final int maxSeekBarValue = 14425215;
-        final int minSeekBarValue = 0;
-        binding.seekBarFrequency.setMax(maxSeekBarValue);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            binding.seekBarFrequency.setMin(minSeekBarValue);
-        }
+     /*   final int maxSeekBarValue = Integer.parseInt(settingsRepository.loadStringRangeTo()) -
+                Integer.parseInt(settingsRepository.loadStringRangeFrom())+1;*/
+       // binding.seekBarFrequency.setMax(maxSeekBarValue);
         seekBarFrequencyDisposable = RxSeekBar.userChanges(binding.seekBarFrequency)
                 .skipInitialValue()
                 .debounce(5, TimeUnit.MILLISECONDS)
@@ -288,6 +296,11 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     @Override
     public void setSeekBarFrequencyProgress(int progress) {
         binding.seekBarFrequency.setProgress(progress);
+    }
+
+    @Override
+    public void setSeekBarMax(int progress) {
+        binding.seekBarFrequency.setMax(progress);
     }
 
     private void setEditTextSelection() {
