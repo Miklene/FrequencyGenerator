@@ -18,7 +18,13 @@ public abstract class FrequencyCounter {
 
     public abstract int countProgress(double frequency);
 
-    protected abstract int getProgress(double frequency);
+    public float validateFrequency(float frequency){
+        if (frequency < valueFrom)
+            frequency = valueFrom;
+        if (frequency > valueTo)
+            frequency = valueTo;
+        return frequency;
+    }
 
     public int countSeekBarMax(){
         return progressTo - progressFrom;
@@ -33,4 +39,7 @@ public abstract class FrequencyCounter {
         this.valueTo = valueTo;
         progressTo=getProgress(valueTo);
     }
+
+    protected abstract int getProgress(double frequency);
+
 }

@@ -31,18 +31,22 @@
         <item>linear</item>
         <item>logarithmic</item>
     </string-array>
+    <!--RangePreference-->
     <string name="range">Диапазон</string>
     <string name="range_from">Диапазон от</string>
     <string name="range_to">Диапазон до</string>
     <string name="from_range">От</string>
     <string name="to_range">Дo</string>
+    <!--RangePreference Errors-->
     <string name="error_lower_one">Значение должно быть больше 0</string>
     <string name="error_greater_22000">Значение должно быть меньше 22000</string>
     <string name="error_empty_field">Поле пустое</string>
     <string name="error_to_greater_from">"'До' значение должно быть больше 'От' значение"</string>
-    <string name="error_from_less_to">"'От' значение должно быть меньше than 'До' значение"</string>
-
-    <string name="dialog_ok">Ок</string>
+    <string name="error_from_less_to">"'От' значение должно быть меньше 'До' значение"</string>
+    <!--AlertDialog-->
+    <string name="dialog_ok">ОК</string>
     <string name="dialog_cancel">Отмена</string>
     <string name="dialog_reset">Сброс</string>
+    <!--EditTextFrequency Errors-->
+    <string name="incorrectValue">Некорректное значение</string>
 </resources>

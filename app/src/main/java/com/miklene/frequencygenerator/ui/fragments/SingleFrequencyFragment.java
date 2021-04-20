@@ -54,7 +54,10 @@ import com.miklene.frequencygenerator.repository.WaveRepository;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import kotlin.jvm.functions.Function1;
 
 
 public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView,
@@ -128,6 +131,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     private Disposable imageButtonPlayDisposable;
 
     private int cursorPosition;
+    private String lastText;
 
     private static final String PREFS_FILE = "Wave";
 
@@ -195,25 +199,39 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     private void initFrequencySeekBar() {
      /*   final int maxSeekBarValue = Integer.parseInt(settingsRepository.loadStringRangeTo()) -
                 Integer.parseInt(settingsRepository.loadStringRangeFrom())+1;*/
-       // binding.seekBarFrequency.setMax(maxSeekBarValue);
+        // binding.seekBarFrequency.setMax(maxSeekBarValue);
         seekBarFrequencyDisposable = RxSeekBar.userChanges(binding.seekBarFrequency)
                 .skipInitialValue()
-                .debounce(5, TimeUnit.MILLISECONDS)
+                .debounce(10, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(frequency -> frequencyPresenter.onSeekBarFrequencyChanged(frequency));
     }
 
     private void initEditTextFrequency() {
-        editTextDisposable = RxTextView.textChanges(binding.editTextFrequency)
+        editTextDisposable = RxTextView.afterTextChangeEvents(binding.editTextFrequency)
+                .skipInitialValue()
+                .debounce(250, TimeUnit.MILLISECONDS)
+                .subscribe(event -> {
+                    String s = binding.editTextFrequency.getText().toString();
+                    if (!s.equals(lastText)) {
+                        cursorPosition = s.length() -
+                                binding.editTextFrequency.getSelectionStart();
+                        saveLastText(s);
+                        frequencyPresenter.onEditTextFrequencyTextChanges(s);
+                    }
+                });
+       /* editTextDisposable = RxTextView.textChanges(binding.editTextFrequency)
                 .skipInitialValue()
                 .debounce(250, TimeUnit.MILLISECONDS)
                 .map(CharSequence::toString)
+                //.filter(s->s.equals(lastText))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
                     cursorPosition = s.length() -
                             binding.editTextFrequency.getSelectionStart();
+                    saveLastText(s);
                     frequencyPresenter.onEditTextFrequencyTextChanges(s);
-                });
+                });*/
         binding.editTextFrequency.setOnClickListener(v ->
                 cursorPosition = binding.editTextFrequency.getText().toString().length() -
                         binding.editTextFrequency.getSelectionStart());
@@ -224,6 +242,10 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
         });
     }
 
+    private void saveLastText(String text) {
+        lastText = text;
+    }
+
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
@@ -231,20 +253,52 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     }
 
     private void initIncreaseButton() {
-        RxView.touches(binding.imageButtonIncreaseFrequency)
+        binding.imageButtonIncreaseFrequency.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
+                frequencyPresenter.onImageButtonIncreaseLongClick();
+                return false;
+            }
+        });
+        binding.imageButtonIncreaseFrequency.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getActionMasked() == MotionEvent.ACTION_UP)
+                    frequencyPresenter.onImageButtonIncreaseUp();
+                if (event.getActionMasked() == MotionEvent.ACTION_CANCEL)
+                    frequencyPresenter.onImageButtonIncreaseUp();
+                return false;
+            }
+        });
+       /* RxView.longClicks(binding.imageButtonIncreaseFrequency)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(v->binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F)))
+                .observeOn(Schedulers.computation())
+                .doOnNext(v -> frequencyPresenter.onImageButtonIncreaseLongClick())
+                .subscribe();*/
+        /*RxView.clicks(binding.imageButtonIncreaseFrequency)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(v->binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F)))
+                .observeOn(Schedulers.computation())
+                .doOnNext(v -> frequencyPresenter.onImageButtonIncreaseUp())
+                .subscribe();*/
+     /*   RxView.touches(binding.imageButtonIncreaseFrequency)
                 .debounce(5, TimeUnit.MILLISECONDS)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(t -> {
-                    if (t.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                  /*  if (t.getActionMasked() == MotionEvent.ACTION_DOWN) {
                         binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
                         frequencyPresenter.onImageButtonIncreaseDown();
-                    }
-                    if (t.getActionMasked() == MotionEvent.ACTION_UP)
+                    }*/
+                 /*   if (t.getActionMasked() == MotionEvent.ACTION_UP)
                         frequencyPresenter.onImageButtonIncreaseUp();
                     if (t.getActionMasked() == MotionEvent.ACTION_CANCEL)
                         frequencyPresenter.onImageButtonIncreaseUp();
-                });
+                });*/
      /*   binding.imageButtonIncreaseFrequency.setOnTouchListener((v, event) -> {
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
@@ -291,6 +345,11 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     public void setEditTextFrequencyText(String frequency) {
         binding.editTextFrequency.setText(frequency);
         setEditTextSelection();
+    }
+
+    @Override
+    public void setEditTextFrequencyError(int textId) {
+        binding.editTextFrequency.setError(getResources().getString(textId));
     }
 
     @Override

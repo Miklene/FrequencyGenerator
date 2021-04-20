@@ -2,6 +2,7 @@ package com.miklene.frequencygenerator.mvp.presenters;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+import com.miklene.frequencygenerator.R;
 import com.miklene.frequencygenerator.mvp.views.FrequencyView;
 import com.miklene.frequencygenerator.repository.SettingsRepository;
 import com.miklene.frequencygenerator.repository.WaveRepository;
@@ -27,9 +28,9 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     private long repeats = 0;
     private final int step = 1;
     private Disposable buttonDisposable;
-    private Disposable scaleDisposable;
-    private Disposable rangeFromDisposable;
-    private Disposable rangeToDisposable;
+    private final Disposable scaleDisposable;
+    private final Disposable rangeFromDisposable;
+    private final Disposable rangeToDisposable;
 
     public FrequencyPresenter(WaveRepository sharedPrefRepository, SettingsRepository settingsRepository) {
         this.sharedPrefRepository = sharedPrefRepository;
@@ -39,26 +40,34 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
                 Integer.parseInt(settingsRepository.loadStringRangeFrom()),
                 Integer.parseInt(settingsRepository.loadStringRangeTo()));
         scaleDisposable = settingsRepository.getScaleSubject()
-                .doOnNext(s -> {
-                    counter = FrequencyCounterFactory.getFrequencyCounter(
-                            s,
-                            Integer.parseInt(settingsRepository.loadStringRangeFrom()),
-                            Integer.parseInt(settingsRepository.loadStringRangeTo()));
-                })
+                .doOnNext(s -> counter = FrequencyCounterFactory.getFrequencyCounter(
+                        s,
+                        Integer.parseInt(settingsRepository.loadStringRangeFrom()),
+                        Integer.parseInt(settingsRepository.loadStringRangeTo()))
+                )
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(r -> getViewState().setSeekBarMax(counter.countSeekBarMax()))
+                .doOnNext(r -> {
+                    getViewState().setSeekBarMax(counter.countSeekBarMax());
+                    setFrequency();
+                })
                 .subscribe();
         rangeFromDisposable = settingsRepository.getRangeFromSubject()
                 .map(Integer::parseInt)
                 .doOnNext(r -> counter.setValueFrom(r))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(r -> getViewState().setSeekBarMax(counter.countSeekBarMax()))
+                .doOnNext(r -> {
+                    getViewState().setSeekBarMax(counter.countSeekBarMax());
+                    setFrequency();
+                })
                 .subscribe();
         rangeToDisposable = settingsRepository.getRangeToSubject()
                 .map(Integer::parseInt)
                 .doOnNext(r -> counter.setValueTo(r))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(r -> getViewState().setSeekBarMax(counter.countSeekBarMax()))
+                .doOnNext(r -> {
+                    getViewState().setSeekBarMax(counter.countSeekBarMax());
+                    setFrequency();
+                })
                 .subscribe();
     }
 
@@ -72,15 +81,20 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     private void setFrequency() {
         sharedPrefRepository.loadFrequency().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .map(frequency -> counter.validateFrequency(frequency))
                 .doOnSuccess(frequency -> {
-                    setSeekBarFrequency(frequency);
+                    setSeekBarFrequency(calculateSeekBarProgress(frequency));
                     setEditTextFrequency(frequency);
                 })
                 .subscribe();
     }
 
-    private void setSeekBarFrequency(float frequency) {
-        getViewState().setSeekBarFrequencyProgress(calculateSeekBarProgress(frequency));
+    private void setSeekBarFrequency(int progress) {
+        getViewState().setSeekBarFrequencyProgress(progress);
+    }
+
+    private int calculateSeekBarProgress(double value) {
+        return counter.countProgress(value);//int) ((Math.log(value) / Math.log(2)) * 1000000);
     }
 
     private void setEditTextFrequency(float frequency) {
@@ -88,14 +102,14 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     }
 
     public void onSeekBarFrequencyChanged(int progress) {
-        frequency = (float)counter.countFrequency(progress);
-       /* if (progress == 14425215)
-            frequency = 22000.00f;
-        else
-            frequency = calculateFrequency(progress);*/
+        frequency = (float) counter.countFrequency(progress);
         saveFrequency(frequency)
                 .doOnComplete(() -> setEditTextFrequency(frequency))
                 .subscribe();
+    }
+
+    private String formatStringValue(float value) {
+        return String.format(Locale.getDefault(), "%.2f", value);
     }
 
     private Completable saveFrequency(float frequency) {
@@ -104,53 +118,38 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private float calculateFrequency(int seekBarProgress) {
+  /*  private float calculateFrequency(int seekBarProgress) {
         float value = (float) (Math.pow(2, (seekBarProgress / 1000000d)));
         double scale = Math.pow(10, 2);
         double result = Math.round(value * scale) / scale;
         return (float) result;
-    }
-
-    private String formatStringValue(float value) {
-        return String.format(Locale.getDefault(), "%.2f", value);
-    }
+    }*/
 
     public void onEditTextFrequencyTextChanges(String text) {
         text = text.replace(',', '.');  //НК
         try {
-            frequency = Float.parseFloat(text);
+            frequency = getFrequency(text);
         } catch (Exception e) {
-            frequency = 1;
-            saveFrequency(frequency)
-                    .doOnComplete(() -> {
-                        setEditTextFrequency(frequency);
-                        setSeekBarFrequency(frequency);
-                    })
-                    .subscribe();
+            getViewState().setEditTextFrequencyError(R.string.incorrectValue);
+            return;
         }
-        if (frequency > 22000) {
-            frequency = 22000;
-            saveFrequency(frequency)
-                    .doOnComplete(() -> setEditTextFrequency(frequency))
-                    .subscribe();
-        }
-        if (frequency < 1) {
-            frequency = 1;
-            saveFrequency(frequency)
-                    .doOnComplete(() -> setEditTextFrequency(frequency))
-                    .subscribe();
-        }
+        frequency = counter.validateFrequency(frequency);
         saveFrequency(frequency)
-                .doOnComplete(() -> setSeekBarFrequency(frequency))
+                .doOnComplete(() -> setEditTextFrequency(frequency))
+                .doOnComplete(() -> setSeekBarFrequency(calculateSeekBarProgress(frequency)))
                 .subscribe();
     }
 
-    private int calculateSeekBarProgress(double value) {
-        return counter.countProgress(value);//int) ((Math.log(value) / Math.log(2)) * 1000000);
+    private float getFrequency(String text) throws Exception {
+        try {
+            return Float.parseFloat(text);
+        } catch (Exception e) {
+            throw new Exception();
+        }
     }
 
     public void onImageButtonIncreaseDown() {
-        repeats = 0;
+
         if (buttonDisposable != null)
             buttonDisposable.dispose();
         buttonDisposable = onLongTouchObservable()
@@ -164,7 +163,27 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
                     saveFrequency(frequency)
                             .doOnComplete(() -> {
                                 setEditTextFrequency(frequency);
-                                setSeekBarFrequency(frequency);
+                                setSeekBarFrequency(calculateSeekBarProgress(frequency));
+                            })
+                            .subscribe();
+                })
+                .subscribe();
+    }
+
+    public void onImageButtonIncreaseLongClick(){
+        repeats = 0;
+        buttonDisposable = onLongTouchObservable()
+                .doOnNext(l -> {
+                    if (repeats == 0)
+                        getViewState().vibrate();
+                    repeats++;
+                    frequency += step;
+                    if (frequency > 22000)
+                        frequency = 22000;
+                    saveFrequency(frequency)
+                            .doOnComplete(() -> {
+                                setEditTextFrequency(frequency);
+                                setSeekBarFrequency(calculateSeekBarProgress(frequency));
                             })
                             .subscribe();
                 })
@@ -172,14 +191,19 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     }
 
     public void onImageButtonIncreaseUp() {
-        buttonDisposable.dispose();
+        if (buttonDisposable != null)
+            buttonDisposable.dispose();
         if (repeats == 0) {
             frequency += step;
             if (frequency > 22000)
                 frequency = 22000;
         }
+        repeats = 0;
         saveFrequency(frequency)
-                .doOnComplete(() -> setEditTextFrequency(frequency))
+                .doOnComplete(() -> {
+                    setEditTextFrequency(frequency);
+                    setSeekBarFrequency(calculateSeekBarProgress(frequency));
+                })
                 .subscribe();
     }
 
@@ -198,7 +222,7 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
                     saveFrequency(frequency)
                             .doOnComplete(() -> {
                                 setEditTextFrequency(frequency);
-                                setSeekBarFrequency(frequency);
+                                setSeekBarFrequency(calculateSeekBarProgress(frequency));
                             })
                             .subscribe();
                 })
@@ -213,12 +237,15 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
                 frequency = 1;
         }
         saveFrequency(frequency)
-                .doOnComplete(() -> setEditTextFrequency(frequency))
+                .doOnComplete(() -> {
+                    setEditTextFrequency(frequency);
+                    setSeekBarFrequency(calculateSeekBarProgress(frequency));
+                })
                 .subscribe();
     }
 
     private Observable<Long> onLongTouchObservable() {
-        return Observable.interval(1000, 100, TimeUnit.MILLISECONDS)
+        return Observable.interval(0, 100, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -227,5 +254,11 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
         super.onDestroy();
         if (buttonDisposable != null)
             buttonDisposable.dispose();
+        if (scaleDisposable != null)
+            scaleDisposable.dispose();
+        if (rangeFromDisposable != null)
+            rangeFromDisposable.dispose();
+        if (rangeToDisposable != null)
+            rangeToDisposable.dispose();
     }
 }
