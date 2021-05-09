@@ -253,13 +253,10 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     }
 
     private void initIncreaseButton() {
-        binding.imageButtonIncreaseFrequency.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
-                frequencyPresenter.onImageButtonIncreaseLongClick();
-                return false;
-            }
+        binding.imageButtonIncreaseFrequency.setOnLongClickListener(v -> {
+            binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
+            frequencyPresenter.onImageButtonIncreaseLongClick();
+            return false;
         });
         binding.imageButtonIncreaseFrequency.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -271,55 +268,13 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
                 return false;
             }
         });
-       /* RxView.longClicks(binding.imageButtonIncreaseFrequency)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(v->binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F)))
-                .observeOn(Schedulers.computation())
-                .doOnNext(v -> frequencyPresenter.onImageButtonIncreaseLongClick())
-                .subscribe();*/
-        /*RxView.clicks(binding.imageButtonIncreaseFrequency)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(v->binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F)))
-                .observeOn(Schedulers.computation())
-                .doOnNext(v -> frequencyPresenter.onImageButtonIncreaseUp())
-                .subscribe();*/
-     /*   RxView.touches(binding.imageButtonIncreaseFrequency)
-                .debounce(5, TimeUnit.MILLISECONDS)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(t -> {
-                  /*  if (t.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                        binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
-                        frequencyPresenter.onImageButtonIncreaseDown();
-                    }*/
-                 /*   if (t.getActionMasked() == MotionEvent.ACTION_UP)
-                        frequencyPresenter.onImageButtonIncreaseUp();
-                    if (t.getActionMasked() == MotionEvent.ACTION_CANCEL)
-                        frequencyPresenter.onImageButtonIncreaseUp();
-                });*/
-     /*   binding.imageButtonIncreaseFrequency.setOnTouchListener((v, event) -> {
-            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
-                frequencyPresenter.onImageButtonIncreaseDown();
-            }
-            if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-                binding.imageButtonIncreaseFrequency.performClick();
-                frequencyPresenter.onImageButtonIncreaseUp();
-            }
-            return true;
-        });*/
     }
 
     private void initDecreaseButton() {
-        binding.imageButtonDecreaseFrequency.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
-                frequencyPresenter.onImageButtonDecreaseLongClick();
-                return false;
-            }
+        binding.imageButtonDecreaseFrequency.setOnLongClickListener(v -> {
+            binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
+            frequencyPresenter.onImageButtonDecreaseLongClick();
+            return false;
         });
         binding.imageButtonDecreaseFrequency.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -331,31 +286,6 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
                 return false;
             }
         });
-       /* RxView.touches(binding.imageButtonDecreaseFrequency)
-                .debounce(5, TimeUnit.MILLISECONDS)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(t -> {
-                    if (t.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                        binding.imageButtonDecreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
-                        frequencyPresenter.onImageButtonDecreaseDown();
-                    }
-                    if (t.getActionMasked() == MotionEvent.ACTION_UP)
-                        frequencyPresenter.onImageButtonDecreaseUp();
-                    if (t.getActionMasked() == MotionEvent.ACTION_CANCEL)
-                        frequencyPresenter.onImageButtonDecreaseUp();
-                });*/
-      /*  binding.imageButtonDecreaseFrequency.setOnTouchListener((v, event) -> {
-            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                binding.imageButtonDecreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
-                frequencyPresenter.onImageButtonDecreaseDown();
-            }
-            if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-                binding.imageButtonDecreaseFrequency.performClick();
-                frequencyPresenter.onImageButtonDecreaseUp();
-            }
-            return true;
-        });*/
     }
 
 
