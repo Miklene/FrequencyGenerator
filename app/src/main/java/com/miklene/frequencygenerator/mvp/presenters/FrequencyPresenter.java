@@ -25,9 +25,8 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     private final SettingsRepository settingsRepository;
     private FrequencyCounter counter;
     private float frequency;
-    private long repeats = 0;
     private final int step = 1;
-    private Disposable buttonDisposable;
+    private Disposable longTouchDisposable;
     private final Disposable scaleDisposable;
     private final Disposable rangeFromDisposable;
     private final Disposable rangeToDisposable;
@@ -118,6 +117,15 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    private void saveAndDisplayFrequency(float frequency) {
+        saveFrequency(frequency)
+                .doOnComplete(() -> {
+                    setEditTextFrequency(frequency);
+                    setSeekBarFrequency(calculateSeekBarProgress(frequency));
+                })
+                .subscribe();
+    }
+
   /*  private float calculateFrequency(int seekBarProgress) {
         float value = (float) (Math.pow(2, (seekBarProgress / 1000000d)));
         double scale = Math.pow(10, 2);
@@ -134,10 +142,7 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
             return;
         }
         frequency = counter.validateFrequency(frequency);
-        saveFrequency(frequency)
-                .doOnComplete(() -> setEditTextFrequency(frequency))
-                .doOnComplete(() -> setSeekBarFrequency(calculateSeekBarProgress(frequency)))
-                .subscribe();
+        saveAndDisplayFrequency(frequency);
     }
 
     private float getFrequency(String text) throws Exception {
@@ -148,100 +153,56 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
         }
     }
 
-    public void onImageButtonIncreaseDown() {
-
-        if (buttonDisposable != null)
-            buttonDisposable.dispose();
-        buttonDisposable = onLongTouchObservable()
+    public void onImageButtonIncreaseLongClick() {
+        getViewState().vibrate();
+        longTouchDisposable = onLongTouchObservable()
                 .doOnNext(l -> {
-                    if (repeats == 0)
-                        getViewState().vibrate();
-                    repeats++;
                     frequency += step;
                     if (frequency > 22000)
                         frequency = 22000;
-                    saveFrequency(frequency)
-                            .doOnComplete(() -> {
-                                setEditTextFrequency(frequency);
-                                setSeekBarFrequency(calculateSeekBarProgress(frequency));
-                            })
-                            .subscribe();
-                })
-                .subscribe();
-    }
-
-    public void onImageButtonIncreaseLongClick(){
-        repeats = 0;
-        buttonDisposable = onLongTouchObservable()
-                .doOnNext(l -> {
-                    if (repeats == 0)
-                        getViewState().vibrate();
-                    repeats++;
-                    frequency += step;
-                    if (frequency > 22000)
-                        frequency = 22000;
-                    saveFrequency(frequency)
-                            .doOnComplete(() -> {
-                                setEditTextFrequency(frequency);
-                                setSeekBarFrequency(calculateSeekBarProgress(frequency));
-                            })
-                            .subscribe();
+                    saveAndDisplayFrequency(frequency);
                 })
                 .subscribe();
     }
 
     public void onImageButtonIncreaseUp() {
-        if (buttonDisposable != null)
-            buttonDisposable.dispose();
-        if (repeats == 0) {
-            frequency += step;
-            if (frequency > 22000)
-                frequency = 22000;
+        if (longTouchDisposable != null) {
+            if (!longTouchDisposable.isDisposed()) {
+                longTouchDisposable.dispose();
+                return;
+            }
         }
-        repeats = 0;
-        saveFrequency(frequency)
-                .doOnComplete(() -> {
-                    setEditTextFrequency(frequency);
-                    setSeekBarFrequency(calculateSeekBarProgress(frequency));
-                })
-                .subscribe();
+        frequency += step;
+        if (frequency > 22000)
+            frequency = 22000;
+        saveAndDisplayFrequency(frequency);
     }
 
-    public void onImageButtonDecreaseDown() {
-        repeats = 0;
-        if (buttonDisposable != null)
-            buttonDisposable.dispose();
-        buttonDisposable = onLongTouchObservable()
+    public void onImageButtonDecreaseLongClick() {
+        getViewState().vibrate();
+        if (longTouchDisposable != null)
+            longTouchDisposable.dispose();
+        longTouchDisposable = onLongTouchObservable()
                 .doOnNext(l -> {
-                    if (repeats == 0)
-                        getViewState().vibrate();
-                    repeats++;
                     frequency -= step;
                     if (frequency < 1)
                         frequency = 1;
-                    saveFrequency(frequency)
-                            .doOnComplete(() -> {
-                                setEditTextFrequency(frequency);
-                                setSeekBarFrequency(calculateSeekBarProgress(frequency));
-                            })
-                            .subscribe();
+                    saveAndDisplayFrequency(frequency);
                 })
                 .subscribe();
     }
 
     public void onImageButtonDecreaseUp() {
-        buttonDisposable.dispose();
-        if (repeats == 0) {
-            frequency -= step;
-            if (frequency < 1)
-                frequency = 1;
+        if (longTouchDisposable != null) {
+            if (!longTouchDisposable.isDisposed()) {
+                longTouchDisposable.dispose();
+                return;
+            }
         }
-        saveFrequency(frequency)
-                .doOnComplete(() -> {
-                    setEditTextFrequency(frequency);
-                    setSeekBarFrequency(calculateSeekBarProgress(frequency));
-                })
-                .subscribe();
+        frequency -= step;
+        if (frequency < 1)
+            frequency = 1;
+        saveAndDisplayFrequency(frequency);
     }
 
     private Observable<Long> onLongTouchObservable() {
@@ -252,8 +213,8 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (buttonDisposable != null)
-            buttonDisposable.dispose();
+        if (longTouchDisposable != null)
+            longTouchDisposable.dispose();
         if (scaleDisposable != null)
             scaleDisposable.dispose();
         if (rangeFromDisposable != null)
