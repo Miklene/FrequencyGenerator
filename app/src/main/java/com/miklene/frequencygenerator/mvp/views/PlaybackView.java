@@ -6,5 +6,6 @@ public interface PlaybackView extends MvpView {
 
     void initPlaybackViews();
     void setImageButtonPlayBackground(int drawableId);
+    void getAudioFocus();
 
 }

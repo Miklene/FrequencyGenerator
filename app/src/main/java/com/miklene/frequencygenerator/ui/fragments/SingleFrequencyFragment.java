@@ -2,6 +2,7 @@ package com.miklene.frequencygenerator.ui.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -54,10 +55,8 @@ import com.miklene.frequencygenerator.repository.WaveRepository;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-import kotlin.jvm.functions.Function1;
+
 
 
 public class SingleFrequencyFragment extends MvpAppCompatFragment implements PlaybackView,
@@ -66,6 +65,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     private SharedPreferences preferences;
     private WaveRepository waveRepository;
     private SettingsRepository settingsRepository;
+    private AudioManager audioManager;
 
     @InjectPresenter
     PlaybackPresenter playbackPresenter;
@@ -313,7 +313,25 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     }
 
     private void initDecreaseButton() {
-        RxView.touches(binding.imageButtonDecreaseFrequency)
+        binding.imageButtonDecreaseFrequency.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
+                frequencyPresenter.onImageButtonDecreaseLongClick();
+                return false;
+            }
+        });
+        binding.imageButtonDecreaseFrequency.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getActionMasked() == MotionEvent.ACTION_UP)
+                    frequencyPresenter.onImageButtonDecreaseUp();
+                if (event.getActionMasked() == MotionEvent.ACTION_CANCEL)
+                    frequencyPresenter.onImageButtonDecreaseUp();
+                return false;
+            }
+        });
+       /* RxView.touches(binding.imageButtonDecreaseFrequency)
                 .debounce(5, TimeUnit.MILLISECONDS)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -326,7 +344,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
                         frequencyPresenter.onImageButtonDecreaseUp();
                     if (t.getActionMasked() == MotionEvent.ACTION_CANCEL)
                         frequencyPresenter.onImageButtonDecreaseUp();
-                });
+                });*/
       /*  binding.imageButtonDecreaseFrequency.setOnTouchListener((v, event) -> {
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 binding.imageButtonDecreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
@@ -428,6 +446,11 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     @Override
     public void setImageButtonPlayBackground(int drawableId) {
         binding.imageButtonPlay.setImageResource(drawableId);
+    }
+
+    @Override
+    public void getAudioFocus() {
+        audioManager = (AudioManager) requireActivity().getSystemService(Context.AUDIO_SERVICE);
     }
 
     /**

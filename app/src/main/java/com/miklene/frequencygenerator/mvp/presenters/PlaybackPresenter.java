@@ -40,6 +40,7 @@ public class PlaybackPresenter extends MvpPresenter<PlaybackView> {
     public void onImageButtonPlayClicked() {
         PlayerState state = wavePlayer.getState();
         if (state.equals(PlayerState.OFF)) {
+            getViewState().getAudioFocus();
             frequencyDisposable = sharedPrefRepository.getFrequencySubject().subscribe(this::changeFrequency);
             volumeDisposable = sharedPrefRepository.getVolumeSubject().subscribe(this::changeVolume);
             rightChannelDisposable = sharedPrefRepository.getRightChannelSubject().subscribe(this::changeRightChannel);

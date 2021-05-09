@@ -88,6 +88,11 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
 
     }
 
+    @Override
+    public void getAudioFocus() {
+
+    }
+
     public interface VolumeListener {
         void confirmButtonClicked();
 
