@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.constraintlayout.motion.widget.KeyTimeCycle;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceManager;
 
@@ -208,7 +209,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
     }
 
     private void initEditTextFrequency() {
-        editTextDisposable = RxTextView.afterTextChangeEvents(binding.editTextFrequency)
+       /* editTextDisposable = RxTextView.afterTextChangeEvents(binding.editTextFrequency)
                 .skipInitialValue()
                 .debounce(250, TimeUnit.MILLISECONDS)
                 .subscribe(event -> {
@@ -217,9 +218,9 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
                         cursorPosition = s.length() -
                                 binding.editTextFrequency.getSelectionStart();
                         saveLastText(s);
-                        frequencyPresenter.onEditTextFrequencyTextChanges(s);
+                        //frequencyPresenter.onEditTextFrequencyTextChanges(s);
                     }
-                });
+                });*/
        /* editTextDisposable = RxTextView.textChanges(binding.editTextFrequency)
                 .skipInitialValue()
                 .debounce(250, TimeUnit.MILLISECONDS)
@@ -236,11 +237,16 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
                 cursorPosition = binding.editTextFrequency.getText().toString().length() -
                         binding.editTextFrequency.getSelectionStart());
         binding.editTextFrequency.setOnKeyListener((v, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_ENTER)
+            if (keyCode == KeyEvent.KEYCODE_ENTER){
+                frequencyPresenter.onEditTextFrequencyTextChanges(binding.editTextFrequency
+                        .getText().toString());
                 hideKeyboard();
+            }
             return false;
         });
     }
+
+
 
     private void saveLastText(String text) {
         lastText = text;
