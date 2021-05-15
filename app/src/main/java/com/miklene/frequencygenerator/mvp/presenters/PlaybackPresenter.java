@@ -1,5 +1,7 @@
 package com.miklene.frequencygenerator.mvp.presenters;
 
+import android.util.Log;
+
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.miklene.frequencygenerator.R;
@@ -78,8 +80,13 @@ public class PlaybackPresenter extends MvpPresenter<PlaybackView> {
     }
 
     private void changeWaveType(String waveType) {
-        wave = SimpleWaveFactory.createWave(WaveType.valueOf(waveType), wave.getFrequency(),
-                wave.getVolume(), wave.getLeft(), wave.getRight());
+        try {
+            wave = SimpleWaveFactory.createWave(WaveType.valueOf(waveType), wave.getFrequency(),
+                    wave.getVolume(), wave.getLeft(), wave.getRight());
+        } catch (ClassNotFoundException e) {
+            Log.e("WAVE_FACTORY", "Wave creation error");
+            return;
+        }
         if(wavePlayer.isPlayed()) {
             wavePlayer.stop();
             while(wavePlayer.isPlayed());
