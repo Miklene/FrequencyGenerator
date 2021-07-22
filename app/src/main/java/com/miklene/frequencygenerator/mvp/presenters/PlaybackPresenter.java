@@ -14,6 +14,8 @@ import com.miklene.frequencygenerator.wave.SineWave;
 import com.miklene.frequencygenerator.wave.Wave;
 import com.miklene.frequencygenerator.wave.WaveType;
 
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.rxjava3.disposables.Disposable;
 
 @InjectViewState
@@ -44,7 +46,9 @@ public class PlaybackPresenter extends MvpPresenter<PlaybackView> {
         if (state.equals(PlayerState.OFF)) {
             getViewState().getAudioFocus();
             frequencyDisposable = sharedPrefRepository.getFrequencySubject().subscribe(this::changeFrequency);
-            volumeDisposable = sharedPrefRepository.getVolumeSubject().subscribe(this::changeVolume);
+            volumeDisposable = sharedPrefRepository.getVolumeSubject()
+                    .debounce(25, TimeUnit.MILLISECONDS)
+                    .subscribe(this::changeVolume);
             rightChannelDisposable = sharedPrefRepository.getRightChannelSubject().subscribe(this::changeRightChannel);
             leftChannelDisposable = sharedPrefRepository.getLeftChannelSubject().subscribe(this::changeLeftChannel);
             waveTypeDisposable = sharedPrefRepository.getWaveTypeSubject().subscribe(this::changeWaveType);

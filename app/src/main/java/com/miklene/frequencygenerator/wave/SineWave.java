@@ -4,20 +4,22 @@ import org.jetbrains.annotations.NotNull;
 
 public class SineWave extends Wave {
 
-
+    private double currentVolume;
+    private double myPreviousVolume;
     public SineWave(float frequency, double volume, double left, double right) {
         super(frequency, volume, left, right);
     }
 
     @Override
     public float[] createBuffer() {
-        /*double volume = getVolume();
-        double left = getLeft();
-        double right = getRight();*/
+        double volume = this.volume;
+        double lastVolume = this.lastVolume;
+        double left = this.left;
+        double right = this.right;
         float[] buffer = new float[duration];
         for (int i = 0; i < buffer.length; i++) {
             buffer[i] = (float) (Math.sin(twoPI *
-                    (frequency * i * hertzAtPoint + phase)) * volume);
+                    (frequency * i * hertzAtPoint + phase)) * countVolume(i, lastVolume, volume));
         }
         countPhase();
         int stereoBufferLength = buffer.length*2;
@@ -30,6 +32,7 @@ public class SineWave extends Wave {
         for (int i = 0; i < stereoBuffer.length; i++) {
             stereoBuffer[i] = stereoBuffer[i] / correctionValue;
         }*/
+        this.lastVolume = volume;
         return stereoBuffer;
      //   return buffer;
     }
@@ -42,6 +45,14 @@ public class SineWave extends Wave {
                 max = Math.abs(buffer[i]);
         }
         return max;
+    }
+
+    private double countVolume(int i, double lastVolume, double volume){
+        if(lastVolume == volume)
+            return volume;
+        if(i<500)
+         return lastVolume + (volume - lastVolume) * i / 500;
+        return volume;
     }
 
     @NotNull

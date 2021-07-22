@@ -15,6 +15,7 @@ public abstract class Wave implements RecordParameters {
     long id = 0;
     float frequency;
     double volume;
+    double lastVolume;
     double left;
     double right;
     double phase;
@@ -22,6 +23,7 @@ public abstract class Wave implements RecordParameters {
     public Wave(float frequency, double volume, double left, double right) {
         this.frequency = frequency;
         this.volume = volume;
+        lastVolume = volume;
         this.left = left;
         this.right = right;
     }
@@ -43,6 +45,7 @@ public abstract class Wave implements RecordParameters {
     }
 
     public void setVolume(double volume) {
+        lastVolume = this.volume;
         this.volume = volume;
     }
 

@@ -7,6 +7,8 @@ import com.miklene.frequencygenerator.wave.SimpleWaveFactory;
 import com.miklene.frequencygenerator.wave.Wave;
 import com.miklene.frequencygenerator.wave.WaveType;
 
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.Subject;
