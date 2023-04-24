@@ -47,10 +47,14 @@ public class PlaybackPresenter extends MvpPresenter<PlaybackView> {
             getViewState().getAudioFocus();
             frequencyDisposable = sharedPrefRepository.getFrequencySubject().subscribe(this::changeFrequency);
             volumeDisposable = sharedPrefRepository.getVolumeSubject()
-                    .debounce(25, TimeUnit.MILLISECONDS)
+                    .debounce(15, TimeUnit.MILLISECONDS)
                     .subscribe(this::changeVolume);
-            rightChannelDisposable = sharedPrefRepository.getRightChannelSubject().subscribe(this::changeRightChannel);
-            leftChannelDisposable = sharedPrefRepository.getLeftChannelSubject().subscribe(this::changeLeftChannel);
+            rightChannelDisposable = sharedPrefRepository.getRightChannelSubject().
+                    debounce(15, TimeUnit.MILLISECONDS).
+                    subscribe(this::changeRightChannel);
+            leftChannelDisposable = sharedPrefRepository.getLeftChannelSubject()
+                    .debounce(15, TimeUnit.MILLISECONDS)
+                    .subscribe(this::changeLeftChannel);
             waveTypeDisposable = sharedPrefRepository.getWaveTypeSubject().subscribe(this::changeWaveType);
             getViewState().setImageButtonPlayBackground(R.drawable.ic_baseline_stop_circle_24);
             wavePlayer.play(wave);
@@ -91,10 +95,10 @@ public class PlaybackPresenter extends MvpPresenter<PlaybackView> {
             Log.e("WAVE_FACTORY", "Wave creation error");
             return;
         }
-        if(wavePlayer.isPlayed()) {
+        if (wavePlayer.isPlayed()) {
             wavePlayer.stop();
-            while(wavePlayer.isPlayed());
-                wavePlayer.play(wave);
+            while (wavePlayer.isPlayed()) ;
+            wavePlayer.play(wave);
         }
     }
 }

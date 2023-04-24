@@ -150,7 +150,7 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
         binding.seekBarVolume.setMax(maxSeekBarValue);
         volumeDisposable = RxSeekBar.userChanges(binding.seekBarVolume)
                 .skipInitialValue()
-                .debounce(5, TimeUnit.MILLISECONDS)
+                .debounce(25, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(progress -> volumePresenter.seekBarVolumeProgressChanged(progress));
     }
@@ -180,7 +180,7 @@ public class VolumeDialogFragment extends MvpAppCompatDialogFragment implements 
         balancePresenter.initBalance();
         balanceDisposable = RxSeekBar.userChanges(binding.seekBarBalance)
                 .skipInitialValue()
-                .debounce(5, TimeUnit.MILLISECONDS)
+                .debounce(25, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(progress -> balancePresenter.seekBarBalanceProgressChanged(progress));
     }

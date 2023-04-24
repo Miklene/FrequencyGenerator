@@ -278,7 +278,7 @@ public class SingleFrequencyFragment extends MvpAppCompatFragment implements Pla
 
     private void initDecreaseButton() {
         binding.imageButtonDecreaseFrequency.setOnLongClickListener(v -> {
-            binding.imageButtonIncreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
+            binding.imageButtonDecreaseFrequency.startAnimation(new AlphaAnimation(1F, 0.8F));
             frequencyPresenter.onImageButtonDecreaseLongClick();
             return false;
         });

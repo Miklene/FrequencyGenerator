@@ -34,6 +34,10 @@ public class FrequencyPresenter extends MvpPresenter<FrequencyView> {
     public FrequencyPresenter(WaveRepository sharedPrefRepository, SettingsRepository settingsRepository) {
         this.sharedPrefRepository = sharedPrefRepository;
         this.settingsRepository = settingsRepository;
+        sharedPrefRepository.loadFrequency()
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess(fr -> frequency = fr)
+                .subscribe();
         counter = FrequencyCounterFactory.getFrequencyCounter(
                 settingsRepository.loadStringScale(),
                 Integer.parseInt(settingsRepository.loadStringRangeFrom()),

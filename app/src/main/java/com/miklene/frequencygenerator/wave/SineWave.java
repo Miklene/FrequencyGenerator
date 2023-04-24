@@ -6,6 +6,7 @@ public class SineWave extends Wave {
 
     private double currentVolume;
     private double myPreviousVolume;
+
     public SineWave(float frequency, double volume, double left, double right) {
         super(frequency, volume, left, right);
     }
@@ -16,25 +17,29 @@ public class SineWave extends Wave {
         double lastVolume = this.lastVolume;
         double left = this.left;
         double right = this.right;
+        double lastLeft = this.lastLeft;
+        double lastRight = this.lastRight;
         float[] buffer = new float[duration];
         for (int i = 0; i < buffer.length; i++) {
             buffer[i] = (float) (Math.sin(twoPI *
                     (frequency * i * hertzAtPoint + phase)) * countVolume(i, lastVolume, volume));
         }
         countPhase();
-        int stereoBufferLength = buffer.length*2;
+        int stereoBufferLength = buffer.length * 2;
         float[] stereoBuffer = new float[stereoBufferLength];
-        for(int i = 0; i < buffer.length; i++){
-            stereoBuffer[2*i] = (float)(buffer[i]*left);
-            stereoBuffer[2*i+1] = (float)(buffer[i]*right);
+        for (int i = 0; i < buffer.length; i++) {
+            stereoBuffer[2 * i] = (float) (buffer[i] * countVolume(i, lastLeft, left));
+            stereoBuffer[2 * i + 1] = (float) (buffer[i] * countVolume(i, lastRight, right));
         }
        /* float correctionValue = findMaxAmplitude(stereoBuffer)*1.2f;
         for (int i = 0; i < stereoBuffer.length; i++) {
             stereoBuffer[i] = stereoBuffer[i] / correctionValue;
         }*/
         this.lastVolume = volume;
+        this.lastLeft = left;
+        this.lastRight = right;
         return stereoBuffer;
-     //   return buffer;
+        //   return buffer;
     }
 
     private float findMaxAmplitude(float[] buffer) {
@@ -47,12 +52,12 @@ public class SineWave extends Wave {
         return max;
     }
 
-    private double countVolume(int i, double lastVolume, double volume){
-        if(lastVolume == volume)
-            return volume;
-        if(i<500)
-         return lastVolume + (volume - lastVolume) * i / 500;
-        return volume;
+    private double countVolume(int i, double last, double current) {
+        if (last == current)
+            return current;
+        if (i <= 500)
+            return last + (current - last) * i / 500;
+        return current;
     }
 
     @NotNull
