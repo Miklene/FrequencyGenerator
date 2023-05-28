@@ -1,6 +1,6 @@
 # FrequencyGenerator
 FrequencyGenerator is Android application that allows to generate a sound wave.
-#Capabilities
+# Capabilities
 FrequencyGenerator has next features:
 - Play wave of four types: sine, sawtooth, triangle and square;
 - Play wave with a frequency from 1Hz to 22000Hz;
