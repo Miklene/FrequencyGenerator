@@ -9,8 +9,8 @@ FrequencyGenerator has next features:
 - Choice between linear and logarithmic frequency scale;
 - Choice of frequency range.
 ## Frameworks
-Language: Java
-Database: Room(SQLite)
-Architecture: MVP(Moxy)
-Multithreading: RxJava
-Tests:JUnit
+- Language: Java
+- Database: Room(SQLite)
+- Architecture: MVP(Moxy)
+- Multithreading: RxJava
+- Tests:JUnit
