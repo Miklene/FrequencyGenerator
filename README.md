@@ -8,7 +8,7 @@ FrequencyGenerator has next features:
 - Control balance between right and left ear;
 - Choice between linear and logarithmic frequency scale;
 - Choice of frequency range.
-##Frameworks
+## Frameworks
 Language: Java
 Database: Room(SQLite)
 Architecture: MVP(Moxy)
